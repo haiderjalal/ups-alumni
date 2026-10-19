@@ -1,0 +1,1433 @@
+// UPS Alumni Network — data model.
+// Business rules for every state machine live in src/features/membership/domain/*.ts and
+// docs/state-machines.md. Keep this file and those documents in sync.
+//
+// Conventions
+// - Tables are snake_case via @@map; Prisma fields are camelCase.
+// - Money is stored as integer minor units (paisa). PKR 500 = 50000.
+// - Timestamps are UTC (`timestamptz`). Display zones are applied in the UI layer only.
+// - Auth tables (User, Session, Account, Verification, RateLimit) follow Better Auth's Prisma adapter.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum StaffRole {
+  SUPER_ADMIN
+  MEMBERSHIP_ADMIN
+  FINANCE_REVIEWER
+  CONTENT_MODERATOR
+  BATCH_REPRESENTATIVE
+  GROUP_REPRESENTATIVE
+}
+
+enum ProfessionalStatus {
+  EMPLOYED
+  BUSINESS_OWNER
+  SELF_EMPLOYED_FREELANCER
+  STUDENT
+  SEEKING_OPPORTUNITIES
+  RETIRED
+  OTHER
+}
+
+/// Who may see a contact detail. PRIVATE = self and administrators only.
+enum Visibility {
+  PRIVATE
+  CONNECTIONS
+  MEMBERS
+}
+
+enum ApplicationStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  CHANGES_REQUESTED
+  APPROVED
+  REJECTED
+}
+
+enum ApplicationReviewAction {
+  NOTE
+  REQUESTED_CHANGES
+  APPROVED
+  REJECTED
+}
+
+enum BatchChangeStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum MembershipStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  CLOSED
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER
+  EASYPAISA
+  JAZZCASH
+}
+
+enum OrderStatus {
+  UNPAID
+  AWAITING_REVIEW
+  CONFIRMED
+  REFUNDED
+}
+
+enum AttemptStatus {
+  SUBMITTED
+  CONFIRMED
+  REJECTED
+}
+
+enum RefundStatus {
+  REQUESTED
+  APPROVED
+  PROCESSED
+  FAILED
+  REJECTED
+}
+
+enum RefundSource {
+  /// Created automatically when an application is rejected after its fee was confirmed.
+  AUTOMATIC_REJECTION
+  MANUAL
+}
+
+enum MediaKind {
+  RECEIPT
+  PROFILE_PHOTO
+  POST_ATTACHMENT
+  GALLERY_PHOTO
+  LOGO
+  RESOURCE_DOCUMENT
+}
+
+enum MediaVisibility {
+  PRIVATE
+  MEMBERS
+  PUBLIC
+}
+
+enum ConsentScope {
+  PUBLIC_STORY
+  PUBLIC_PHOTO
+  DIRECTORY_LISTING
+  BUSINESS_PUBLICATION
+  NEWSLETTER
+}
+
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  WITHDRAWN
+}
+
+enum EventVisibility {
+  PUBLIC
+  MEMBERS
+  BATCH
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+}
+
+enum RsvpStatus {
+  GOING
+  WAITLISTED
+  CANCELLED
+}
+
+enum OpportunityCategory {
+  JOB
+  INTERNSHIP
+  FREELANCE
+  VOLUNTEER
+}
+
+enum RemoteType {
+  ONSITE
+  HYBRID
+  REMOTE
+}
+
+enum ModerationStatus {
+  DRAFT
+  PENDING_REVIEW
+  PUBLISHED
+  REJECTED
+  CLOSED
+}
+
+enum MentorshipRequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  WITHDRAWN
+}
+
+enum MentorshipStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum GroupKind {
+  BATCH
+  PROFESSION
+  CHAPTER
+  INTEREST
+}
+
+enum GroupJoinPolicy {
+  OPEN
+  REQUEST
+}
+
+enum GroupMemberRole {
+  MEMBER
+  MODERATOR
+}
+
+enum GroupMemberStatus {
+  PENDING
+  ACTIVE
+  REMOVED
+}
+
+enum PostStatus {
+  VISIBLE
+  HIDDEN
+  REMOVED
+}
+
+enum StoryStatus {
+  SUBMITTED
+  CHANGES_REQUESTED
+  APPROVED
+  PUBLISHED
+  REJECTED
+  WITHDRAWN
+}
+
+enum ResourceStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum ReportTargetType {
+  PROFILE
+  POST
+  COMMENT
+  MESSAGE
+  BUSINESS
+  OPPORTUNITY
+  STORY
+  EVENT
+}
+
+enum ReportStatus {
+  OPEN
+  ACTIONED
+  DISMISSED
+}
+
+enum SupportStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+}
+
+enum AccountRequestKind {
+  DATA_EXPORT
+  CLOSURE
+}
+
+enum AccountRequestStatus {
+  REQUESTED
+  COMPLETED
+  REJECTED
+}
+
+enum NotificationKind {
+  APPLICATION_UPDATE
+  PAYMENT_UPDATE
+  MEMBERSHIP_UPDATE
+  CONNECTION
+  MESSAGE
+  MENTORSHIP
+  GROUP
+  EVENT
+  SYSTEM
+}
+
+enum EmailStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+// ---------------------------------------------------------------------------
+// Authentication (Better Auth Prisma adapter)
+// ---------------------------------------------------------------------------
+
+model User {
+  id            String   @id @default(cuid())
+  name          String
+  email         String
+  emailVerified Boolean  @default(false)
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sessions      Session[]
+  accounts      Account[]
+
+  profile                 AlumniProfile?
+  application             AlumniApplication?
+  membership              Membership?
+  communicationPreference CommunicationPreference?
+  roles                   RoleAssignment[] @relation("RoleHolder")
+  grantedRoles            RoleAssignment[] @relation("RoleGrantor")
+  orders                  RegistrationOrder[]
+  submittedAttempts       PaymentAttempt[] @relation("AttemptSubmitter")
+  reviewedAttempts        PaymentAttempt[] @relation("AttemptReviewer")
+  consents                ConsentRecord[]
+  notifications           Notification[]
+  batchChangeRequests     BatchChangeRequest[]
+  applicationReviews      ApplicationReview[]
+  mediaAssets             MediaAsset[]        @relation("MediaOwner")
+
+  connectionRequestsSent     ConnectionRequest[] @relation("ConnectionRequester")
+  connectionRequestsReceived ConnectionRequest[] @relation("ConnectionAddressee")
+  connectionsAsLow           Connection[]        @relation("ConnectionLow")
+  connectionsAsHigh          Connection[]        @relation("ConnectionHigh")
+  blocksGiven                Block[]             @relation("Blocker")
+  blocksReceived             Block[]             @relation("Blocked")
+  conversationParticipations ConversationParticipant[]
+  messagesSent               Message[]
+
+  businessOwnerships  BusinessOwner[]
+  collaborationRequestsSent CollaborationRequest[]
+  opportunitiesPosted Opportunity[]    @relation("OpportunityPoster")
+  opportunityReviews  Opportunity[]    @relation("OpportunityReviewer")
+  savedOpportunities  SavedOpportunity[]
+
+  mentorProfile              MentorProfile?
+  mentorshipRequestsAsMentee  MentorshipRequest[] @relation("MentorshipMentee")
+  mentorshipRequestsAsMentor  MentorshipRequest[] @relation("MentorshipMentor")
+  mentorshipsAsMentor         Mentorship[]        @relation("MentorshipMentorUser")
+  mentorshipsAsMentee         Mentorship[]        @relation("MentorshipMenteeUser")
+
+  groupMemberships GroupMembership[]
+  posts            Post[]
+  comments         Comment[]
+  reactions        Reaction[]
+
+  eventsOrganized    Event[]             @relation("EventOrganizer")
+  eventRegistrations EventRegistration[]
+  stories            Story[]
+  resources          Resource[]          @relation("ResourceAuthor")
+  reportsFiled       Report[]            @relation("ReportReporter")
+  supportRequests    SupportRequest[]
+  accountRequests    AccountRequest[]
+
+  @@unique([email])
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verifications")
+}
+
+model RateLimit {
+  id          String @id @default(cuid())
+  key         String @unique
+  count       Int
+  lastRequest BigInt
+
+  @@map("rate_limits")
+}
+
+// ---------------------------------------------------------------------------
+// Staff roles (server-enforced; one account may hold several roles)
+// ---------------------------------------------------------------------------
+
+model RoleAssignment {
+  id          String    @id @default(cuid())
+  userId      String
+  role        StaffRole
+  batchId     String?
+  groupId     String?
+  grantedById String?
+  createdAt   DateTime  @default(now())
+  revokedAt   DateTime?
+
+  user      User   @relation("RoleHolder", fields: [userId], references: [id], onDelete: Cascade)
+  grantedBy User?  @relation("RoleGrantor", fields: [grantedById], references: [id], onDelete: SetNull)
+  batch     Batch? @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  group     Group? @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([role])
+  @@map("role_assignments")
+}
+
+// ---------------------------------------------------------------------------
+// Alumni profile
+// ---------------------------------------------------------------------------
+
+model Batch {
+  id        String   @id @default(cuid())
+  year      Int      @unique
+  label     String?
+  isListed  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profiles            AlumniProfile[]
+  batchChangeRequests BatchChangeRequest[]
+  roleAssignments     RoleAssignment[]
+  events              Event[]
+
+  @@map("batches")
+}
+
+model AlumniProfile {
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  /// Non-sequential public identifier for member cards and shareable links.
+  publicId             String   @unique
+  phoneE164            String?
+  currentCity          String?
+  currentCountry       String?
+  hometown             String?
+  pronouns             String?
+  bio                  String?  @db.VarChar(600)
+  photoMediaId         String?  @unique
+
+  matricYear           Int?
+  batchId              String?
+  batchReviewRequested Boolean  @default(false)
+  batchReviewNote      String?  @db.VarChar(400)
+  schoolJoinYear       Int?
+  schoolLeaveYear      Int?
+  section              String?
+  house                String?
+  /// Private: visible to the member and administrators only.
+  rollNumber           String?
+  /// Private aid to verification. Never treated as proof of identity.
+  schoolMemory         String?  @db.VarChar(600)
+
+  professionalStatuses ProfessionalStatus[]
+  jobTitle             String?
+  organization         String?
+  industry             String?
+  companyUrl           String?
+  expertise            String?
+  offeredServices      String?
+  portfolioUrl         String?
+  institution          String?
+  fieldOfStudy         String?
+  expectedCompletionYear Int?
+  desiredRoles         String[]
+  linkedinUrl          String?
+  interests            String[]
+
+  availableToMentor     Boolean @default(false)
+  seekingMentorship     Boolean @default(false)
+  hiring                Boolean @default(false)
+  openToCollaboration   Boolean @default(false)
+  volunteering          Boolean @default(false)
+  directoryDiscoverable Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  batch           Batch?            @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  photo           MediaAsset?       @relation("ProfilePhoto", fields: [photoMediaId], references: [id], onDelete: SetNull)
+  contactVisibility ContactVisibility?
+  skills          ProfileSkill[]
+  experiences     ProfessionalExperience[]
+  educations      Education[]
+
+  @@index([batchId])
+  @@index([directoryDiscoverable])
+  @@map("alumni_profiles")
+}
+
+model ContactVisibility {
+  id        String     @id @default(cuid())
+  profileId String     @unique
+  email     Visibility @default(PRIVATE)
+  phone     Visibility @default(PRIVATE)
+  linkedin  Visibility @default(MEMBERS)
+
+  profile AlumniProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@map("contact_visibilities")
+}
+
+model Skill {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+
+  profiles ProfileSkill[]
+
+  @@map("skills")
+}
+
+model ProfileSkill {
+  profileId String
+  skillId   String
+
+  profile AlumniProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  skill   Skill         @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([profileId, skillId])
+  @@map("profile_skills")
+}
+
+model ProfessionalExperience {
+  id           String    @id @default(cuid())
+  profileId    String
+  title        String
+  organization String
+  startYear    Int?
+  endYear      Int?
+  isCurrent    Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  profile AlumniProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@map("professional_experiences")
+}
+
+model Education {
+  id            String   @id @default(cuid())
+  profileId     String
+  institution   String
+  qualification String
+  fieldOfStudy  String?
+  startYear     Int?
+  endYear       Int?
+  createdAt     DateTime @default(now())
+
+  profile AlumniProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@map("educations")
+}
+
+model CommunicationPreference {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  newsletterOptIn    Boolean  @default(false)
+  eventEmails        Boolean  @default(true)
+  connectionEmails   Boolean  @default(true)
+  /// Random token for one-click newsletter unsubscribe links.
+  unsubscribeToken   String   @unique
+  updatedAt          DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("communication_preferences")
+}
+
+model ConsentRecord {
+  id        String       @id @default(cuid())
+  userId    String
+  scope     ConsentScope
+  source    String
+  grantedAt DateTime     @default(now())
+  revokedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, scope])
+  @@map("consent_records")
+}
+
+// ---------------------------------------------------------------------------
+// Application, review and membership
+// ---------------------------------------------------------------------------
+
+model AlumniApplication {
+  id               String            @id @default(cuid())
+  userId           String            @unique
+  status           ApplicationStatus @default(DRAFT)
+  currentStep      Int               @default(1)
+  /// Unvalidated, in-progress step values saved by autosave. Normalized into AlumniProfile only when a step is continued.
+  draftJson        Json?
+  draftUpdatedAt   DateTime?
+  /// Required before submission. Applicant confirms attendance and accuracy.
+  attestedAt       DateTime?
+  submittedAt      DateTime?
+  decidedAt        DateTime?
+  decidedById      String?
+  decisionReason   String?           @db.VarChar(600)
+  /// Optimistic concurrency counter for review transitions.
+  version          Int               @default(0)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  user    User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reviews ApplicationReview[]
+
+  @@index([status])
+  @@map("alumni_applications")
+}
+
+model ApplicationReview {
+  id            String                   @id @default(cuid())
+  applicationId String
+  reviewerId    String
+  action        ApplicationReviewAction
+  /// Private staff note. Never shown to the applicant unless copied into a decision reason.
+  note          String?                  @db.VarChar(1000)
+  createdAt     DateTime                 @default(now())
+
+  application AlumniApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  reviewer    User              @relation(fields: [reviewerId], references: [id], onDelete: Restrict)
+
+  @@index([applicationId])
+  @@map("application_reviews")
+}
+
+model BatchChangeRequest {
+  id          String            @id @default(cuid())
+  userId      String
+  batchId     String?
+  requestedYear Int
+  reason      String            @db.VarChar(600)
+  status      BatchChangeStatus @default(PENDING)
+  decidedById String?
+  decidedAt   DateTime?
+  createdAt   DateTime          @default(now())
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  batch Batch? @relation(fields: [batchId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([status])
+  @@map("batch_change_requests")
+}
+
+model Membership {
+  id        String           @id @default(cuid())
+  userId    String           @unique
+  /// Printed on the digital membership card. Non-sequential.
+  cardId    String           @unique
+  status    MembershipStatus @default(PENDING)
+  activatedAt DateTime?
+  suspendedAt DateTime?
+  suspendedReason String?    @db.VarChar(600)
+  closedAt  DateTime?
+  closedReason String?      @db.VarChar(600)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@map("memberships")
+}
+
+// ---------------------------------------------------------------------------
+// Fees, payments, refunds (append-only financial history)
+// ---------------------------------------------------------------------------
+
+model FeeSchedule {
+  id            String   @id @default(cuid())
+  code          String
+  amountMinor   Int
+  currency      String   @default("PKR")
+  effectiveFrom DateTime
+  note          String?  @db.VarChar(300)
+  createdById   String?
+  createdAt     DateTime @default(now())
+
+  orders RegistrationOrder[]
+
+  @@index([code, effectiveFrom])
+  @@map("fee_schedules")
+}
+
+model ReceivingAccount {
+  id                String        @id @default(cuid())
+  method            PaymentMethod
+  label             String
+  accountTitle      String
+  accountIdentifier String
+  instructions      String?       @db.VarChar(1000)
+  isActive          Boolean       @default(false)
+  sortOrder         Int           @default(0)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  orders   RegistrationOrder[]
+  attempts PaymentAttempt[]
+
+  @@map("receiving_accounts")
+}
+
+model RegistrationOrder {
+  id               String      @id @default(cuid())
+  /// Human-readable reference quoted in the bank or wallet transfer narration.
+  reference        String      @unique
+  userId           String
+  feeScheduleId    String
+  amountMinor      Int
+  currency         String      @default("PKR")
+  status           OrderStatus @default(UNPAID)
+  /// Snapshot of the receiving account shown at order creation. The order keeps these values even if settings change.
+  receivingAccountId String?
+  receivingMethod    PaymentMethod?
+  receivingTitle     String?
+  receivingIdentifier String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  user       User              @relation(fields: [userId], references: [id], onDelete: Restrict)
+  feeSchedule FeeSchedule      @relation(fields: [feeScheduleId], references: [id], onDelete: Restrict)
+  receivingAccount ReceivingAccount? @relation(fields: [receivingAccountId], references: [id], onDelete: SetNull)
+  attempts   PaymentAttempt[]
+  confirmed  ConfirmedPayment?
+  refunds    Refund[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("registration_orders")
+}
+
+model PaymentAttempt {
+  id                 String        @id @default(cuid())
+  orderId            String
+  status             AttemptStatus @default(SUBMITTED)
+  method             PaymentMethod
+  receivingAccountId String?
+  transactionReference String
+  /// Uppercased, alphanumeric-only form used for duplicate detection.
+  normalizedReference  String
+  amountMinor        Int
+  currency           String        @default("PKR")
+  paidOn             DateTime      @db.Date
+  payerName          String?
+  receiptMediaId     String?       @unique
+  submittedById      String
+  reviewedById       String?
+  reviewedAt         DateTime?
+  reviewNote         String?       @db.VarChar(600)
+  reconciliationReference String?  @db.VarChar(120)
+  version            Int           @default(0)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  order           RegistrationOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  receivingAccount ReceivingAccount? @relation(fields: [receivingAccountId], references: [id], onDelete: SetNull)
+  receipt         MediaAsset?       @relation("PaymentReceipt", fields: [receiptMediaId], references: [id], onDelete: SetNull)
+  submittedBy     User              @relation("AttemptSubmitter", fields: [submittedById], references: [id], onDelete: Restrict)
+  reviewedBy      User?             @relation("AttemptReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  confirmed       ConfirmedPayment?
+
+  // Partial unique indexes (one open attempt per order; one reference per method and account) are added in the migration SQL.
+  @@index([orderId])
+  @@index([status])
+  @@index([normalizedReference])
+  @@map("payment_attempts")
+}
+
+/// Written once when a finance reviewer confirms an attempt. Rows are never updated or deleted (see migration trigger).
+model ConfirmedPayment {
+  id                      String   @id @default(cuid())
+  orderId                 String   @unique
+  attemptId               String   @unique
+  receiptNumber           String   @unique
+  amountMinor             Int
+  currency                String   @default("PKR")
+  method                  PaymentMethod
+  receivingAccountId      String?
+  transactionReference    String
+  reconciliationReference String
+  confirmedById           String
+  confirmedAt             DateTime @default(now())
+
+  order   RegistrationOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  attempt PaymentAttempt    @relation(fields: [attemptId], references: [id], onDelete: Restrict)
+
+  @@map("confirmed_payments")
+}
+
+model Refund {
+  id                 String       @id @default(cuid())
+  orderId            String
+  status             RefundStatus @default(REQUESTED)
+  amountMinor        Int
+  currency           String       @default("PKR")
+  reason             String       @db.VarChar(600)
+  source             RefundSource @default(MANUAL)
+  requestedById      String?
+  decidedById        String?
+  decidedAt          DateTime?
+  processedById      String?
+  processedAt        DateTime?
+  transactionEvidence String?     @db.VarChar(200)
+  failureReason      String?      @db.VarChar(600)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  order RegistrationOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
+
+  @@index([orderId])
+  @@index([status])
+  @@map("refunds")
+}
+
+// ---------------------------------------------------------------------------
+// Private media and documents
+// ---------------------------------------------------------------------------
+
+model MediaAsset {
+  id          String          @id @default(cuid())
+  ownerId     String
+  kind        MediaKind
+  visibility  MediaVisibility @default(PRIVATE)
+  storageKey  String          @unique
+  mimeType    String
+  sizeBytes   Int
+  /// Sanitized original file name. Never used as a storage path.
+  originalName String
+  sha256      String
+  postId      String?
+  createdAt   DateTime        @default(now())
+  deletedAt   DateTime?
+
+  owner       User              @relation("MediaOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  profilePhoto AlumniProfile?    @relation("ProfilePhoto")
+  receiptFor   PaymentAttempt?   @relation("PaymentReceipt")
+  post         Post?             @relation("PostAttachment", fields: [postId], references: [id], onDelete: Cascade)
+  resource     Resource?         @relation("ResourceMedia")
+
+  @@index([ownerId])
+  @@map("media_assets")
+}
+
+// ---------------------------------------------------------------------------
+// Connections, blocks and messaging
+// ---------------------------------------------------------------------------
+
+model ConnectionRequest {
+  id          String           @id @default(cuid())
+  requesterId String
+  addresseeId String
+  /// Sorted "low:high" user-id pair. Unique to block duplicate requests in either direction.
+  pairKey     String           @unique
+  status      ConnectionStatus @default(PENDING)
+  message     String?          @db.VarChar(300)
+  respondedAt DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  requester User @relation("ConnectionRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  addressee User @relation("ConnectionAddressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+
+  @@index([addresseeId, status])
+  @@map("connection_requests")
+}
+
+model Connection {
+  id        String   @id @default(cuid())
+  lowUserId  String
+  highUserId String
+  /// Sorted "low:high" user-id pair. Exactly one accepted connection per pair.
+  pairKey   String   @unique
+  createdAt DateTime @default(now())
+
+  low  User @relation("ConnectionLow", fields: [lowUserId], references: [id], onDelete: Cascade)
+  high User @relation("ConnectionHigh", fields: [highUserId], references: [id], onDelete: Cascade)
+
+  @@index([highUserId])
+  @@map("connections")
+}
+
+model Block {
+  id          String   @id @default(cuid())
+  blockerId   String
+  blockedId   String
+  createdAt   DateTime @default(now())
+
+  blocker User @relation("Blocker", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked User @relation("Blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@unique([blockerId, blockedId])
+  @@index([blockedId])
+  @@map("blocks")
+}
+
+model Conversation {
+  id           String   @id @default(cuid())
+  /// Sorted "low:high" user-id pair. One direct conversation per pair.
+  pairKey      String   @unique
+  lastMessageAt DateTime?
+  createdAt    DateTime @default(now())
+
+  participants ConversationParticipant[]
+  messages     Message[]
+
+  @@map("conversations")
+}
+
+model ConversationParticipant {
+  conversationId String
+  userId         String
+  lastReadAt     DateTime?
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([conversationId, userId])
+  @@index([userId])
+  @@map("conversation_participants")
+}
+
+model Message {
+  id             String    @id @default(cuid())
+  conversationId String
+  senderId       String
+  body           String    @db.VarChar(2000)
+  createdAt      DateTime  @default(now())
+  deletedAt      DateTime?
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@index([senderId, createdAt])
+  @@map("messages")
+}
+
+// ---------------------------------------------------------------------------
+// Businesses, opportunities, mentorship
+// ---------------------------------------------------------------------------
+
+model Business {
+  id                String          @id @default(cuid())
+  slug              String          @unique
+  name              String
+  sector            String
+  city              String
+  description       String          @db.VarChar(1500)
+  productsServices  String          @db.VarChar(800)
+  websiteUrl        String?
+  contactEmail      String?
+  contactPhone      String?
+  /// Business contact details are published only when this opt-in is true and status is PUBLISHED.
+  publishContact    Boolean         @default(false)
+  status            ModerationStatus @default(DRAFT)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  owners        BusinessOwner[]
+  collaborationRequests CollaborationRequest[]
+
+  @@index([status, sector])
+  @@map("businesses")
+}
+
+model BusinessOwner {
+  businessId String
+  userId     String
+  createdAt  DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([businessId, userId])
+  @@index([userId])
+  @@map("business_owners")
+}
+
+model CollaborationRequest {
+  id          String   @id @default(cuid())
+  businessId  String
+  requesterId String
+  message     String   @db.VarChar(1000)
+  createdAt   DateTime @default(now())
+
+  business  Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  requester User     @relation(fields: [requesterId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+  @@map("collaboration_requests")
+}
+
+model Opportunity {
+  id            String              @id @default(cuid())
+  title         String
+  organization  String
+  category      OpportunityCategory
+  locationCity  String?
+  remoteType    RemoteType          @default(ONSITE)
+  description   String              @db.VarChar(3000)
+  applicationUrl String
+  deadline      DateTime?
+  status        ModerationStatus    @default(PENDING_REVIEW)
+  postedById    String
+  reviewedById  String?
+  reviewedAt    DateTime?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  postedBy   User                @relation("OpportunityPoster", fields: [postedById], references: [id], onDelete: Cascade)
+  reviewedBy User?               @relation("OpportunityReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  saves      SavedOpportunity[]
+
+  @@index([status, category])
+  @@map("opportunities")
+}
+
+model SavedOpportunity {
+  userId        String
+  opportunityId String
+  createdAt     DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  opportunity Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  @@id([userId, opportunityId])
+  @@map("saved_opportunities")
+}
+
+model MentorProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  expertise     String   @db.VarChar(600)
+  topics        String[]
+  languages     String[]
+  availability  String   @db.VarChar(300)
+  capacity      Int      @default(1)
+  isActive      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([isActive])
+  @@map("mentor_profiles")
+}
+
+model MentorshipRequest {
+  id           String                  @id @default(cuid())
+  mentorId     String
+  menteeId     String
+  goal         String                  @db.VarChar(800)
+  preferredFormat String               @default("ONLINE")
+  status       MentorshipRequestStatus @default(PENDING)
+  respondedAt  DateTime?
+  createdAt    DateTime                @default(now())
+
+  mentor  User        @relation("MentorshipMentor", fields: [mentorId], references: [id], onDelete: Cascade)
+  mentee  User        @relation("MentorshipMentee", fields: [menteeId], references: [id], onDelete: Cascade)
+  mentorship Mentorship?
+
+  @@index([mentorId, status])
+  @@map("mentorship_requests")
+}
+
+model Mentorship {
+  id        String           @id @default(cuid())
+  requestId String           @unique
+  mentorId  String
+  menteeId  String
+  status    MentorshipStatus @default(ACTIVE)
+  startedAt DateTime         @default(now())
+  endedAt   DateTime?
+
+  request MentorshipRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  mentor  User              @relation("MentorshipMentorUser", fields: [mentorId], references: [id], onDelete: Cascade)
+  mentee  User              @relation("MentorshipMenteeUser", fields: [menteeId], references: [id], onDelete: Cascade)
+
+  @@map("mentorships")
+}
+
+// ---------------------------------------------------------------------------
+// Groups, feed and moderation
+// ---------------------------------------------------------------------------
+
+model Group {
+  id          String         @id @default(cuid())
+  slug        String         @unique
+  name        String
+  description String         @db.VarChar(1000)
+  kind        GroupKind
+  joinPolicy  GroupJoinPolicy @default(REQUEST)
+  /// Private groups never appear in listings, search or feeds for non-members.
+  isPrivate   Boolean        @default(true)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  memberships GroupMembership[]
+  posts       Post[]
+  roles       RoleAssignment[]
+
+  @@map("groups")
+}
+
+model GroupMembership {
+  groupId   String
+  userId    String
+  role      GroupMemberRole   @default(MEMBER)
+  status    GroupMemberStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([groupId, userId])
+  @@index([userId])
+  @@map("group_memberships")
+}
+
+model Post {
+  id        String     @id @default(cuid())
+  authorId  String
+  /// null = member-wide feed post; otherwise the group it belongs to.
+  groupId   String?
+  body      String     @db.VarChar(4000)
+  isPinned  Boolean    @default(false)
+  status    PostStatus @default(VISIBLE)
+  editedAt  DateTime?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  author   User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  group    Group?     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  comments Comment[]
+  reactions Reaction[]
+  attachments MediaAsset[] @relation("PostAttachment")
+
+  @@index([groupId, createdAt])
+  @@index([authorId])
+  @@map("posts")
+}
+
+model Comment {
+  id        String     @id @default(cuid())
+  postId    String
+  authorId  String
+  body      String     @db.VarChar(2000)
+  status    PostStatus @default(VISIBLE)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([postId, createdAt])
+  @@map("comments")
+}
+
+model Reaction {
+  postId    String
+  userId    String
+  kind      String   @default("APPRECIATE")
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([postId, userId])
+  @@map("reactions")
+}
+
+model Report {
+  id          String           @id @default(cuid())
+  reporterId  String
+  targetType  ReportTargetType
+  targetId    String
+  reason      String           @db.VarChar(120)
+  details     String?          @db.VarChar(1000)
+  status      ReportStatus     @default(OPEN)
+  handledById String?
+  handledAt   DateTime?
+  createdAt   DateTime         @default(now())
+
+  reporter User @relation("ReportReporter", fields: [reporterId], references: [id], onDelete: Cascade)
+
+  @@index([status, targetType])
+  @@map("reports")
+}
+
+// ---------------------------------------------------------------------------
+// Events
+// ---------------------------------------------------------------------------
+
+model Event {
+  id            String          @id @default(cuid())
+  slug          String          @unique
+  title         String
+  description   String          @db.VarChar(4000)
+  startsAt      DateTime
+  endsAt        DateTime?
+  /// IANA zone shown next to every time. Storage is UTC.
+  timezone      String          @default("Asia/Karachi")
+  locationText  String?
+  virtualUrl    String?
+  visibility    EventVisibility @default(MEMBERS)
+  batchId       String?
+  capacity      Int?
+  rsvpDeadline  DateTime?
+  status        EventStatus     @default(DRAFT)
+  organizerId   String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  organizer     User                @relation("EventOrganizer", fields: [organizerId], references: [id], onDelete: Restrict)
+  batch         Batch?              @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  registrations EventRegistration[]
+
+  @@index([status, startsAt])
+  @@map("events")
+}
+
+model EventRegistration {
+  eventId   String
+  userId    String
+  status    RsvpStatus @default(GOING)
+  /// Set when the waitlist entry was created. Promotion follows this order.
+  waitlistedAt DateTime?
+  attendedAt   DateTime?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, userId])
+  @@index([eventId, status])
+  @@map("event_registrations")
+}
+
+// ---------------------------------------------------------------------------
+// Stories, resources, CMS and site settings
+// ---------------------------------------------------------------------------
+
+model Story {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  authorId    String
+  title       String      @db.VarChar(160)
+  body        String      @db.VarChar(8000)
+  status      StoryStatus @default(SUBMITTED)
+  /// Public publication needs its own explicit consent, recorded in ConsentRecord.
+  publicConsentAt DateTime?
+  reviewNote  String?     @db.VarChar(600)
+  reviewedById String?
+  publishedAt DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([status, publishedAt])
+  @@map("stories")
+}
+
+model Resource {
+  id          String         @id @default(cuid())
+  slug        String         @unique
+  title       String
+  summary     String         @db.VarChar(600)
+  visibility  MediaVisibility @default(MEMBERS)
+  status      ResourceStatus @default(DRAFT)
+  externalUrl String?
+  mediaId     String?        @unique
+  authorId    String
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  author User        @relation("ResourceAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  media  MediaAsset? @relation("ResourceMedia", fields: [mediaId], references: [id], onDelete: SetNull)
+
+  @@map("resources")
+}
+
+/// Drafts and publishes CMS documents. Public pages render only publishedJson.
+model ContentDocument {
+  id            String    @id @default(cuid())
+  key           String    @unique
+  draftJson     Json
+  publishedJson Json?
+  draftUpdatedAt DateTime @default(now())
+  publishedAt   DateTime?
+  updatedById   String?
+  createdAt     DateTime  @default(now())
+
+  @@map("content_documents")
+}
+
+model SiteSetting {
+  key         String   @id
+  valueJson   Json
+  updatedById String?
+  updatedAt   DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
+// ---------------------------------------------------------------------------
+// Operations: notifications, outbound email, audit, support
+// ---------------------------------------------------------------------------
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  kind      NotificationKind
+  title     String
+  body      String           @db.VarChar(600)
+  linkPath  String?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+  @@map("notifications")
+}
+
+/// Durable outbox. dedupeKey prevents the same logical event being sent twice.
+model EmailOutbox {
+  id          String      @id @default(cuid())
+  dedupeKey   String      @unique
+  toAddress   String
+  subject     String
+  bodyText    String?     @db.Text
+  bodyHtml    String?     @db.Text
+  status      EmailStatus @default(PENDING)
+  attempts    Int         @default(0)
+  lastError   String?     @db.VarChar(500)
+  nextAttemptAt DateTime  @default(now())
+  sentAt      DateTime?
+  createdAt   DateTime    @default(now())
+
+  @@index([status, nextAttemptAt])
+  @@map("email_outbox")
+}
+
+/// Append-only. Application code never updates or deletes rows (enforced by trigger in the migration).
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorId     String?
+  actorRoles  String[]
+  action      String
+  entityType  String
+  entityId    String
+  /// Metadata must never contain private documents, full messages or secrets.
+  metadataJson Json?
+  createdAt   DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([actorId, createdAt])
+  @@map("audit_logs")
+}
+
+model SupportRequest {
+  id        String        @id @default(cuid())
+  userId    String?
+  email     String
+  category  String        @db.VarChar(60)
+  subject   String        @db.VarChar(160)
+  message   String        @db.VarChar(4000)
+  status    SupportStatus @default(OPEN)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@map("support_requests")
+}
+
+model AccountRequest {
+  id          String               @id @default(cuid())
+  userId      String
+  kind        AccountRequestKind
+  status      AccountRequestStatus @default(REQUESTED)
+  createdAt   DateTime             @default(now())
+  completedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, kind])
+  @@map("account_requests")
+}
