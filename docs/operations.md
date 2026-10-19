@@ -55,7 +55,7 @@ Test a restore at least once before live collections:
 ## Email
 
 Outbound email is stored in `email_outbox` first. A row stays PENDING until it is delivered. After eight
-failed attempts it is marked FAILED and needs operator attention: check the SMTP settings, then reset
+failed attempts it is marked FAILED and needs operator attention: check the Resend API key and the verified sender domain, then reset
 the row to PENDING (`status`, `attempts = 0`, `nextAttemptAt = now()`).
 
 Message bodies are cleared once a message is sent, because some carry single-use links.

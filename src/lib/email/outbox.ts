@@ -79,12 +79,15 @@ export async function dispatchDueEmails(batchSize = DEFAULT_BATCH_SIZE): Promise
 
   for (const row of claimed) {
     try {
-      await transport.send({
-        to: row.toAddress,
-        subject: row.subject,
-        text: row.bodyText ?? "",
-        html: row.bodyHtml ?? undefined,
-      });
+      await transport.send(
+        {
+          to: row.toAddress,
+          subject: row.subject,
+          text: row.bodyText ?? "",
+          html: row.bodyHtml ?? undefined,
+        },
+        { idempotencyKey: row.id },
+      );
       // Clear bodies after delivery: they may contain single-use sign-in or reset links.
       await db.emailOutbox.update({
         where: { id: row.id },

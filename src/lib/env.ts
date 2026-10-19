@@ -1,15 +1,5 @@
 import { z } from "zod";
 
-/**
- * Parses a `"true" | "false"` environment string. Anything else fails validation
- * rather than silently becoming `false`.
- */
-const booleanFlag = (defaultValue: boolean) =>
-  z
-    .enum(["true", "false"])
-    .default(defaultValue ? "true" : "false")
-    .transform((value) => value === "true");
-
 const serverEnvSchema = z
   .object({
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
@@ -21,13 +11,11 @@ const serverEnvSchema = z
     BETTER_AUTH_URL: z.url(),
     BETTER_AUTH_SECRET: z.string().min(32, "BETTER_AUTH_SECRET must be at least 32 characters."),
 
-    EMAIL_DRIVER: z.enum(["dev-sink", "smtp"]).default("dev-sink"),
+    EMAIL_DRIVER: z.enum(["dev-sink", "resend"]).default("dev-sink"),
+    /** Must be an address on a domain verified in Resend, for example "UPS Alumni Network <no-reply@yourdomain>". */
     EMAIL_FROM: z.string().min(3),
-    SMTP_HOST: z.string().optional(),
-    SMTP_PORT: z.coerce.number().int().positive().default(587),
-    SMTP_SECURE: booleanFlag(false),
-    SMTP_USER: z.string().optional(),
-    SMTP_PASSWORD: z.string().optional(),
+    /** Server-only. Create it in the Resend dashboard with sending access. */
+    RESEND_API_KEY: z.string().min(10, "RESEND_API_KEY looks too short.").optional(),
 
     STORAGE_DRIVER: z.enum(["local", "supabase"]).default("local"),
     STORAGE_LOCAL_DIR: z.string().min(1).default(".local-storage"),
@@ -39,14 +27,14 @@ const serverEnvSchema = z
   .superRefine((env, ctx) => {
     const isProduction = env.NODE_ENV === "production";
 
-    if (isProduction && env.EMAIL_DRIVER !== "smtp") {
-      ctx.addIssue({ code: "custom", path: ["EMAIL_DRIVER"], message: "Production requires EMAIL_DRIVER=smtp." });
+    if (isProduction && env.EMAIL_DRIVER !== "resend") {
+      ctx.addIssue({ code: "custom", path: ["EMAIL_DRIVER"], message: "Production requires EMAIL_DRIVER=resend." });
     }
     if (isProduction && env.STORAGE_DRIVER !== "supabase") {
       ctx.addIssue({ code: "custom", path: ["STORAGE_DRIVER"], message: "Production requires STORAGE_DRIVER=supabase." });
     }
-    if (env.EMAIL_DRIVER === "smtp" && !env.SMTP_HOST) {
-      ctx.addIssue({ code: "custom", path: ["SMTP_HOST"], message: "SMTP_HOST is required when EMAIL_DRIVER=smtp." });
+    if (env.EMAIL_DRIVER === "resend" && !env.RESEND_API_KEY) {
+      ctx.addIssue({ code: "custom", path: ["RESEND_API_KEY"], message: "RESEND_API_KEY is required when EMAIL_DRIVER=resend." });
     }
     if (env.STORAGE_DRIVER === "supabase") {
       const missing = (["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"] as const).filter((key) => !env[key]);

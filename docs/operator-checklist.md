@@ -8,7 +8,7 @@ spec but are not built in this version.
 - [ ] `NODE_ENV=production`, `NEXT_PUBLIC_SITE_URL` and `BETTER_AUTH_URL` set to the HTTPS origin.
 - [ ] `BETTER_AUTH_SECRET` is a random value of at least 32 characters, stored in the host's secret store.
 - [ ] `DATABASE_URL` points to a managed PostgreSQL instance with TLS. Do not reuse development credentials.
-- [ ] `EMAIL_DRIVER=smtp` with a real provider. Production refuses the development sink.
+- [ ] `EMAIL_DRIVER=resend` with `RESEND_API_KEY` and an `EMAIL_FROM` address on a domain verified in Resend. Production refuses the development sink.
 - [ ] `STORAGE_DRIVER=supabase` with `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` and a bucket that is **private** (not public). Production refuses local storage.
 - [ ] No `.env` file, seed password, or bootstrap password is present on the server.
 

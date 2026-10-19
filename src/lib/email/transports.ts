@@ -4,11 +4,11 @@ import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 import { getEnv } from "@/lib/env";
 
-import type { EmailMessage, EmailTransport } from "./types";
+import type { EmailMessage, EmailTransport, SendOptions } from "./types";
 
 const DEV_MAIL_DIR = ".dev-mail";
 
@@ -24,41 +24,40 @@ class DevSinkTransport implements EmailTransport {
   }
 }
 
-class SmtpTransport implements EmailTransport {
-  private readonly transporter;
+/**
+ * Production transport for Resend. The sender address must belong to a domain verified in Resend.
+ * Failures are rethrown with the provider's error name only, so recipient details never reach the outbox or logs.
+ */
+class ResendTransport implements EmailTransport {
+  private readonly client: Resend;
 
-  constructor(options: {
-    host: string;
-    port: number;
-    secure: boolean;
-    user?: string;
-    password?: string;
-  }) {
-    this.transporter = nodemailer.createTransport({
-      host: options.host,
-      port: options.port,
-      secure: options.secure,
-      auth: options.user && options.password ? { user: options.user, pass: options.password } : undefined,
-      connectionTimeout: 10_000,
-      greetingTimeout: 10_000,
-      socketTimeout: 20_000,
-    });
+  constructor(apiKey: string) {
+    this.client = new Resend(apiKey);
   }
 
-  async send(message: EmailMessage): Promise<void> {
-    await this.transporter.sendMail({
-      from: getEnv().EMAIL_FROM,
-      to: message.to,
-      subject: message.subject,
-      text: message.text,
-      html: message.html,
-    });
+  async send(message: EmailMessage, options?: SendOptions): Promise<void> {
+    const { error } = await this.client.emails.send(
+      {
+        from: getEnv().EMAIL_FROM,
+        to: message.to,
+        subject: message.subject,
+        text: message.text,
+        ...(message.html ? { html: message.html } : {}),
+      },
+      options?.idempotencyKey ? { idempotencyKey: options.idempotencyKey } : undefined,
+    );
+
+    if (error) {
+      const failure = new Error(error.message);
+      failure.name = error.name;
+      throw failure;
+    }
   }
 }
 
 let transport: EmailTransport | undefined;
 
-/** Returns the configured transport. SMTP credentials are read here and nowhere else. */
+/** Returns the configured transport. The Resend API key is read here and nowhere else. */
 export function getEmailTransport(): EmailTransport {
   if (transport) {
     return transport;
@@ -66,14 +65,8 @@ export function getEmailTransport(): EmailTransport {
 
   const env = getEnv();
   transport =
-    env.EMAIL_DRIVER === "smtp"
-      ? new SmtpTransport({
-          host: env.SMTP_HOST ?? "",
-          port: env.SMTP_PORT,
-          secure: env.SMTP_SECURE,
-          user: env.SMTP_USER,
-          password: env.SMTP_PASSWORD,
-        })
+    env.EMAIL_DRIVER === "resend"
+      ? new ResendTransport(env.RESEND_API_KEY ?? "")
       : new DevSinkTransport();
 
   return transport;
