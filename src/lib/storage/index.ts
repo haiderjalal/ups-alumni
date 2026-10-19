@@ -3,7 +3,7 @@ import "server-only";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 import { getEnv } from "@/lib/env";
 
@@ -42,50 +42,58 @@ class LocalStorageAdapter implements StorageAdapter {
   }
 }
 
-/** Production adapter for any S3-compatible service (AWS S3, MinIO, Cloudflare R2). Bucket stays private. */
-class S3StorageAdapter implements StorageAdapter {
-  private readonly client: S3Client;
+/**
+ * Production adapter backed by Supabase Storage. The bucket must be private (not public). Files are only read
+ * through the authorized /api/files route, so no public URLs are ever generated. The service-role key stays on
+ * the server and is never sent to the browser.
+ */
+class SupabaseStorageAdapter implements StorageAdapter {
+  private readonly client: SupabaseClient;
 
   constructor(
     private readonly bucket: string,
-    options: { region: string; endpoint?: string; forcePathStyle: boolean; accessKeyId: string; secretAccessKey: string },
+    options: { url: string; serviceRoleKey: string },
   ) {
-    this.client = new S3Client({
-      region: options.region,
-      endpoint: options.endpoint,
-      forcePathStyle: options.forcePathStyle,
-      credentials: { accessKeyId: options.accessKeyId, secretAccessKey: options.secretAccessKey },
+    this.client = createClient(options.url, options.serviceRoleKey, {
+      auth: { persistSession: false, autoRefreshToken: false },
     });
   }
 
   async put(input: { key: string; body: Uint8Array; contentType: string }): Promise<void> {
     assertSafeStorageKey(input.key);
-    await this.client.send(
-      new PutObjectCommand({
-        Bucket: this.bucket,
-        Key: input.key,
-        Body: input.body,
-        ContentType: input.contentType,
-      }),
-    );
+    // Copy into a standard ArrayBuffer-backed array, which is what the Blob constructor accepts.
+    const bytes = new Uint8Array(input.body.byteLength);
+    bytes.set(input.body);
+    const { error } = await this.client.storage
+      .from(this.bucket)
+      .upload(input.key, new Blob([bytes], { type: input.contentType }), {
+        contentType: input.contentType,
+        upsert: false,
+      });
+    if (error) {
+      throw new Error(`Supabase Storage upload failed: ${error.message}`);
+    }
   }
 
   async get(key: string): Promise<Uint8Array | null> {
     assertSafeStorageKey(key);
-    try {
-      const response = await this.client.send(new GetObjectCommand({ Bucket: this.bucket, Key: key }));
-      return response.Body ? await response.Body.transformToByteArray() : null;
-    } catch (error) {
-      if ((error as { name?: string }).name === "NoSuchKey") {
+    const { data, error } = await this.client.storage.from(this.bucket).download(key);
+    if (error) {
+      const notFound = error.status === 404 || error.statusCode === "404" || /not found/i.test(error.message);
+      if (notFound) {
         return null;
       }
-      throw error;
+      throw new Error(`Supabase Storage download failed: ${error.message}`);
     }
+    return new Uint8Array(await data.arrayBuffer());
   }
 
   async remove(key: string): Promise<void> {
     assertSafeStorageKey(key);
-    await this.client.send(new DeleteObjectCommand({ Bucket: this.bucket, Key: key }));
+    const { error } = await this.client.storage.from(this.bucket).remove([key]);
+    if (error) {
+      throw new Error(`Supabase Storage delete failed: ${error.message}`);
+    }
   }
 }
 
@@ -99,13 +107,10 @@ export function getStorage(): StorageAdapter {
 
   const env = getEnv();
   storage =
-    env.STORAGE_DRIVER === "s3"
-      ? new S3StorageAdapter(env.S3_BUCKET ?? "", {
-          region: env.S3_REGION,
-          endpoint: env.S3_ENDPOINT,
-          forcePathStyle: env.S3_FORCE_PATH_STYLE,
-          accessKeyId: env.S3_ACCESS_KEY_ID ?? "",
-          secretAccessKey: env.S3_SECRET_ACCESS_KEY ?? "",
+    env.STORAGE_DRIVER === "supabase"
+      ? new SupabaseStorageAdapter(env.SUPABASE_STORAGE_BUCKET, {
+          url: env.SUPABASE_URL ?? "",
+          serviceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY ?? "",
         })
       : new LocalStorageAdapter(path.resolve(env.STORAGE_LOCAL_DIR));
 

@@ -38,7 +38,7 @@ details in `/admin/settings`.
 
 - Back up PostgreSQL daily with point-in-time recovery where the host supports it. Payment and audit
   history live in the database, so this is the most important backup.
-- Back up the private object store (receipts and documents) on the same schedule as the database.
+- Back up the private Supabase Storage bucket (receipts and documents) on the same schedule as the database. Supabase's own database backups do not include Storage objects.
   A database restore without its matching files leaves receipts unreadable.
 - Keep the `BETTER_AUTH_SECRET` value in your secret store with the backup. Rotating it signs every
   member out.
@@ -49,7 +49,7 @@ Test a restore at least once before live collections:
 
 1. Restore the database backup into an empty instance.
 2. Run `npx prisma migrate status` against it. It must report no pending migrations.
-3. Restore the object store and confirm that one receipt opens through `/admin/payments/[id]`.
+3. Restore the Storage bucket and confirm that one receipt opens through `/admin/payments/[id]`.
 4. Start the web server and worker, then open `/api/health`.
 
 ## Email

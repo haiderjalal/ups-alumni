@@ -23,12 +23,11 @@
     "test:integration": "vitest run -c vitest.integration.config.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1152.0",
-    "@aws-sdk/s3-request-presigner": "^3.1152.0",
     "@base-ui/react": "^1.9.0",
     "@hookform/resolvers": "^5.9.2",
     "@prisma/adapter-pg": "7.10.1",
     "@prisma/client": "7.10.1",
+    "@supabase/supabase-js": "2.118.0",
     "better-auth": "1.7.11",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.5.0",

@@ -29,7 +29,7 @@ cp .env.example .env.local        # then set BETTER_AUTH_SECRET (openssl rand -b
 Start PostgreSQL, either:
 
 ```bash
-docker compose up -d postgres minio     # if Docker is installed
+docker compose up -d postgres            # if Docker is installed
 # or, without Docker (development only):
 npm run db:local                        # leave this running in its own terminal
 ```
@@ -77,7 +77,7 @@ point them at a database that holds real data.
 
 ## Deployment
 
-1. Provision PostgreSQL (managed, with TLS) and a private S3-compatible bucket.
+1. Create a Supabase project. Use its PostgreSQL database (through the pooler, with TLS) and a private Storage bucket.
 2. Set the production environment variables. The app refuses to start in production with the
    development mail sink or local storage. See `.env.example` for every variable.
 3. `npm run db:deploy` against production, then `npm run build`.

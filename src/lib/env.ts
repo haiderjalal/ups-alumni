@@ -29,14 +29,12 @@ const serverEnvSchema = z
     SMTP_USER: z.string().optional(),
     SMTP_PASSWORD: z.string().optional(),
 
-    STORAGE_DRIVER: z.enum(["local", "s3"]).default("local"),
+    STORAGE_DRIVER: z.enum(["local", "supabase"]).default("local"),
     STORAGE_LOCAL_DIR: z.string().min(1).default(".local-storage"),
-    S3_ENDPOINT: z.url().optional(),
-    S3_REGION: z.string().min(1).default("us-east-1"),
-    S3_BUCKET: z.string().optional(),
-    S3_ACCESS_KEY_ID: z.string().optional(),
-    S3_SECRET_ACCESS_KEY: z.string().optional(),
-    S3_FORCE_PATH_STYLE: booleanFlag(true),
+    SUPABASE_URL: z.url().optional(),
+    /** Server-only. Bypasses row-level security, so it must never be exposed to the browser. */
+    SUPABASE_SERVICE_ROLE_KEY: z.string().min(20, "SUPABASE_SERVICE_ROLE_KEY looks too short.").optional(),
+    SUPABASE_STORAGE_BUCKET: z.string().min(1).default("ups-alumni-private"),
   })
   .superRefine((env, ctx) => {
     const isProduction = env.NODE_ENV === "production";
@@ -44,16 +42,16 @@ const serverEnvSchema = z
     if (isProduction && env.EMAIL_DRIVER !== "smtp") {
       ctx.addIssue({ code: "custom", path: ["EMAIL_DRIVER"], message: "Production requires EMAIL_DRIVER=smtp." });
     }
-    if (isProduction && env.STORAGE_DRIVER !== "s3") {
-      ctx.addIssue({ code: "custom", path: ["STORAGE_DRIVER"], message: "Production requires STORAGE_DRIVER=s3." });
+    if (isProduction && env.STORAGE_DRIVER !== "supabase") {
+      ctx.addIssue({ code: "custom", path: ["STORAGE_DRIVER"], message: "Production requires STORAGE_DRIVER=supabase." });
     }
     if (env.EMAIL_DRIVER === "smtp" && !env.SMTP_HOST) {
       ctx.addIssue({ code: "custom", path: ["SMTP_HOST"], message: "SMTP_HOST is required when EMAIL_DRIVER=smtp." });
     }
-    if (env.STORAGE_DRIVER === "s3") {
-      const missing = (["S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"] as const).filter((key) => !env[key]);
+    if (env.STORAGE_DRIVER === "supabase") {
+      const missing = (["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"] as const).filter((key) => !env[key]);
       for (const key of missing) {
-        ctx.addIssue({ code: "custom", path: [key], message: `${key} is required when STORAGE_DRIVER=s3.` });
+        ctx.addIssue({ code: "custom", path: [key], message: `${key} is required when STORAGE_DRIVER=supabase.` });
       }
     }
   });

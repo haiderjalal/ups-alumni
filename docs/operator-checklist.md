@@ -9,7 +9,7 @@ spec but are not built in this version.
 - [ ] `BETTER_AUTH_SECRET` is a random value of at least 32 characters, stored in the host's secret store.
 - [ ] `DATABASE_URL` points to a managed PostgreSQL instance with TLS. Do not reuse development credentials.
 - [ ] `EMAIL_DRIVER=smtp` with a real provider. Production refuses the development sink.
-- [ ] `STORAGE_DRIVER=s3` pointing at a **private** bucket. Production refuses local storage.
+- [ ] `STORAGE_DRIVER=supabase` with `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` and a bucket that is **private** (not public). Production refuses local storage.
 - [ ] No `.env` file, seed password, or bootstrap password is present on the server.
 
 ## 2. Database
