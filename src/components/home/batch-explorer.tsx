@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { AnimatePresence, motion } from "motion/react";
 import { useId, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -50,23 +51,31 @@ export function BatchExplorer({ years }: BatchExplorerProps) {
         ))}
       </div>
 
-      {selected !== null ? (
-        <article
-          aria-live="polite"
-          className="flex flex-col justify-between gap-6 rounded-[1.25rem] border border-brand-border bg-brand-surface p-8"
-        >
-          <div className="space-y-3">
-            <h3 className="font-display text-3xl font-semibold">Batch {selected}</h3>
-            <p className="max-w-prose leading-relaxed text-brand-muted">
-              Former students who completed Class 10 in {selected} are welcome to join. Sign in to see classmates from
-              this batch, post in the batch space, and find reunion events.
-            </p>
-          </div>
-          <div>
-            <Button render={<Link href={`${ROUTES.register}?batch=${selected}`} />}>Join with batch {selected}</Button>
-          </div>
-        </article>
-      ) : null}
+      <div aria-live="polite">
+        <AnimatePresence mode="wait">
+          {selected !== null ? (
+            <motion.article
+              key={selected}
+              initial={{ opacity: 0, y: 18, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.98 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              className="flex h-full flex-col justify-between gap-6 rounded-[1.25rem] border border-brand-border bg-brand-surface p-8"
+            >
+              <div className="space-y-3">
+                <h3 className="font-display text-3xl font-semibold">Batch {selected}</h3>
+                <p className="max-w-prose leading-relaxed text-brand-muted">
+                  Former students who completed Class 10 in {selected} are welcome to join. Sign in to see classmates from
+                  this batch, post in the batch space, and find reunion events.
+                </p>
+              </div>
+              <div>
+                <Button render={<Link href={`${ROUTES.register}?batch=${selected}`} />}>Join with batch {selected}</Button>
+              </div>
+            </motion.article>
+          ) : null}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

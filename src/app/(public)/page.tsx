@@ -3,9 +3,14 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle2, GraduationCap, Handshake, Briefcase, HeartHandshake } from "lucide-react";
 
 import { BatchExplorer } from "@/components/home/batch-explorer";
+import { HeroStage } from "@/components/motion/hero-stage";
+import { Marquee } from "@/components/motion/marquee";
+import { ProcessTrack } from "@/components/motion/process-track";
+import { Reveal } from "@/components/motion/reveal";
+import { TiltCard } from "@/components/motion/tilt-card";
+import { WordReveal } from "@/components/motion/word-reveal";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/shared/container";
-import { PhotoPlaceholder } from "@/components/shared/photo-placeholder";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { ROUTES } from "@/constants/routes";
 import { SITE } from "@/constants/site";
@@ -26,6 +31,14 @@ export const metadata: Metadata = {
 };
 
 export const revalidate = 300;
+
+const MARQUEE_ITEMS = [
+  "Classmates across batches",
+  "Professional connections",
+  "Alumni-owned businesses",
+  "Mentorship and giving back",
+  "Verified alumni status",
+] as const;
 
 const BENEFITS = [
   {
@@ -71,43 +84,56 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="relative overflow-hidden border-b border-brand-border">
-        <Container className="grid gap-12 py-14 md:grid-cols-[1.1fr_0.9fr] md:items-center md:py-24">
+      <section className="relative overflow-hidden">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-40 -top-40 size-[32rem] rounded-full bg-brand-tint/70 blur-3xl"
+        />
+        <Container className="relative grid gap-12 py-14 md:grid-cols-[1.1fr_0.9fr] md:items-center md:py-24">
           <div className="space-y-8">
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand-gold-text">{SITE.contextLine}</p>
+            <Reveal>
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand-gold-text">{SITE.contextLine}</p>
+            </Reveal>
             <h1 className="font-display text-5xl font-semibold leading-[1.02] sm:text-6xl lg:text-[4.5rem]">
-              Different batches. Shared beginnings.
+              <WordReveal text="Different batches. Shared beginnings." />
             </h1>
-            <p className="max-w-xl text-lg leading-relaxed text-brand-muted">
-              Reconnect with your UPS classmates, discover alumni across professions, and create new opportunities
-              together.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Button size="lg" render={<Link href={ROUTES.register} />}>
-                Join for {feeLabel}
-                <ArrowRight aria-hidden="true" className="size-4" />
-              </Button>
-              <Button size="lg" variant="outline" render={<Link href={ROUTES.about} />}>
-                Explore the Community
-              </Button>
-            </div>
+            <Reveal delay={0.5}>
+              <p className="max-w-xl text-lg leading-relaxed text-brand-muted">
+                Reconnect with your UPS classmates, discover alumni across professions, and create new opportunities
+                together.
+              </p>
+            </Reveal>
+            <Reveal delay={0.6}>
+              <div className="flex flex-wrap gap-3">
+                <Button size="lg" render={<Link href={ROUTES.register} />}>
+                  Join for {feeLabel}
+                  <ArrowRight aria-hidden="true" className="size-4" />
+                </Button>
+                <Button size="lg" variant="outline" render={<Link href={ROUTES.about} />}>
+                  Explore the Community
+                </Button>
+              </div>
+            </Reveal>
           </div>
-          <PhotoPlaceholder
-            label="Approved campus and reunion photography will appear here."
-            className="aspect-[4/5] w-full max-w-md justify-self-center md:justify-self-end"
-          />
+          <Reveal delay={0.2} distance={24}>
+            <HeroStage />
+          </Reveal>
         </Container>
       </section>
 
+      <Marquee items={MARQUEE_ITEMS} />
+
       <section aria-labelledby="about-heading" className="py-20">
         <Container className="grid gap-10 md:grid-cols-[0.9fr_1.1fr]">
-          <SectionHeading
-            as="h2"
-            eyebrow="About the school"
-            title="A school community that keeps growing"
-            description={<p>{SITE.schoolName} is part of the {SITE.contextLine} context. This network is run by alumni to keep former students connected.</p>}
-          />
-          <div className="space-y-5 text-lg leading-relaxed text-brand-muted">
+          <Reveal>
+            <SectionHeading
+              as="h2"
+              eyebrow="About the school"
+              title="A school community that keeps growing"
+              description={<p>{SITE.schoolName} is part of the {SITE.contextLine} context. This network is run by alumni to keep former students connected.</p>}
+            />
+          </Reveal>
+          <Reveal delay={0.15} className="space-y-5 text-lg leading-relaxed text-brand-muted">
             <p>
               Whether you are employed, running a business, freelancing, still studying or looking for your next
               opportunity, the network is built for every stage of your career.
@@ -117,39 +143,53 @@ export default async function HomePage() {
                 Read more about the community
               </Link>
             </p>
-          </div>
+          </Reveal>
         </Container>
       </section>
 
       <section aria-labelledby="batches-heading" className="bg-brand-sage/60 py-20">
         <Container className="space-y-10">
-          <SectionHeading
-            as="h2"
-            eyebrow="Find your batch"
-            title="Start with the year you completed Class 10"
-            description="Batches group former students by matric completion year. Member details are private: sign in to see who else is in your batch."
-          />
-          <BatchExplorer years={batchYears} />
+          <Reveal>
+            <SectionHeading
+              as="h2"
+              eyebrow="Find your batch"
+              title="Start with the year you completed Class 10"
+              description="Batches group former students by matric completion year. Member details are private: sign in to see who else is in your batch."
+            />
+          </Reveal>
+          <Reveal delay={0.1}>
+            <BatchExplorer years={batchYears} />
+          </Reveal>
         </Container>
       </section>
 
       <section aria-labelledby="benefits-heading" className="py-20">
         <Container className="space-y-12">
-          <SectionHeading
-            as="h2"
-            eyebrow="Membership"
-            title="What the network is for"
-          />
-          <ul className="grid gap-x-10 gap-y-12 md:grid-cols-2">
-            {BENEFITS.map((benefit) => (
-              <li key={benefit.title} className="flex gap-5">
-                <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-brand-tint text-brand-deep">
-                  <benefit.icon aria-hidden="true" className="size-6" />
-                </span>
-                <div className="space-y-2">
-                  <h3 className="font-display text-2xl font-semibold">{benefit.title}</h3>
-                  <p className="leading-relaxed text-brand-muted">{benefit.text}</p>
-                </div>
+          <Reveal>
+            <SectionHeading as="h2" eyebrow="Membership" title="What the network is for" />
+          </Reveal>
+          <ul className="grid gap-6 md:grid-cols-2">
+            {BENEFITS.map((benefit, index) => (
+              <li key={benefit.title} className="h-full">
+                <Reveal delay={index * 0.08} className="h-full">
+                  <TiltCard className="h-full">
+                    <div
+                      className="flex h-full gap-5 rounded-2xl border border-brand-border bg-brand-surface p-7 shadow-[0_24px_50px_-32px_rgba(8,44,37,0.35)]"
+                      style={{ transformStyle: "preserve-3d" }}
+                    >
+                      <span
+                        className="flex size-12 shrink-0 items-center justify-center rounded-full bg-brand-tint text-brand-deep"
+                        style={{ transform: "translateZ(36px)" }}
+                      >
+                        <benefit.icon aria-hidden="true" className="size-6" />
+                      </span>
+                      <div className="space-y-2">
+                        <h3 className="font-display text-2xl font-semibold">{benefit.title}</h3>
+                        <p className="leading-relaxed text-brand-muted">{benefit.text}</p>
+                      </div>
+                    </div>
+                  </TiltCard>
+                </Reveal>
               </li>
             ))}
           </ul>
@@ -159,9 +199,11 @@ export default async function HomePage() {
       {upcomingEvents.length > 0 || stories.length > 0 ? (
         <section aria-labelledby="spotlight-heading" className="bg-brand-surface py-20">
           <Container className="space-y-12">
-            <SectionHeading as="h2" eyebrow="Happening now" title="Events and stories" />
+            <Reveal>
+              <SectionHeading as="h2" eyebrow="Happening now" title="Events and stories" />
+            </Reveal>
             {upcomingEvents.length > 0 ? (
-              <div className="space-y-4">
+              <Reveal className="space-y-4">
                 <h3 className="font-display text-2xl font-semibold">Upcoming events</h3>
                 <ul className="divide-y divide-brand-border border-y border-brand-border">
                   {upcomingEvents.map((event) => (
@@ -176,21 +218,22 @@ export default async function HomePage() {
                     </li>
                   ))}
                 </ul>
-              </div>
+              </Reveal>
             ) : null}
             {stories.length > 0 ? (
               <div className="grid gap-6 md:grid-cols-3">
-                {stories.map((story) => (
-                  <Link
-                    key={story.slug}
-                    href={`${ROUTES.stories}/${story.slug}`}
-                    className="group space-y-3 rounded-2xl border border-brand-border bg-brand-ivory p-6 transition-colors duration-200 hover:border-brand-deep"
-                  >
-                    <h3 className="font-display text-2xl font-semibold group-hover:text-brand-deep">{story.title}</h3>
-                    <p className="text-sm text-brand-muted">
-                      {story.authorBatchYear ? `Batch ${story.authorBatchYear}` : "An alumnus"}
-                    </p>
-                  </Link>
+                {stories.map((story, index) => (
+                  <Reveal key={story.slug} delay={index * 0.08} className="h-full">
+                    <Link
+                      href={`${ROUTES.stories}/${story.slug}`}
+                      className="group block h-full space-y-3 rounded-2xl border border-brand-border bg-brand-ivory p-6 transition-colors duration-200 hover:border-brand-deep"
+                    >
+                      <h3 className="font-display text-2xl font-semibold group-hover:text-brand-deep">{story.title}</h3>
+                      <p className="text-sm text-brand-muted">
+                        {story.authorBatchYear ? `Batch ${story.authorBatchYear}` : "An alumnus"}
+                      </p>
+                    </Link>
+                  </Reveal>
                 ))}
               </div>
             ) : null}
@@ -200,34 +243,46 @@ export default async function HomePage() {
 
       <section aria-labelledby="process-heading" className="py-20">
         <Container className="grid gap-12 md:grid-cols-[0.9fr_1.1fr]">
-          <SectionHeading as="h2" eyebrow="How to join" title="Four steps to your membership" />
-          <ol className="space-y-6">
-            {STEPS.map((step, index) => (
-              <li key={step} className="flex gap-4 border-b border-brand-border pb-6">
-                <span className="font-display text-3xl font-semibold text-brand-gold-text">{index + 1}</span>
-                <p className="pt-1 text-lg leading-relaxed">{step}</p>
-              </li>
-            ))}
-          </ol>
+          <Reveal>
+            <SectionHeading as="h2" eyebrow="How to join" title="Four steps to your membership" />
+          </Reveal>
+          <Reveal delay={0.1}>
+            <ProcessTrack>
+              <ol className="space-y-8">
+                {STEPS.map((step, index) => (
+                  <li key={step} className="relative flex gap-6">
+                    <span className="relative z-10 flex size-8 shrink-0 items-center justify-center rounded-full border border-brand-gold bg-brand-ivory font-display text-lg font-semibold text-brand-gold-text">
+                      {index + 1}
+                    </span>
+                    <p className="pt-0.5 text-lg leading-relaxed">{step}</p>
+                  </li>
+                ))}
+              </ol>
+            </ProcessTrack>
+          </Reveal>
         </Container>
       </section>
 
       <section aria-labelledby="fee-heading" className="py-20">
         <Container className="grid gap-10 md:grid-cols-[0.9fr_1.1fr]">
-          <div className="space-y-5 rounded-[1.25rem] bg-brand-deep p-8 text-white md:p-10">
-            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-white/75">Registration fee</p>
-            <h2 id="fee-heading" className="font-display text-5xl font-semibold">
-              {feeLabel}
-            </h2>
-            <p className="text-white/85">
-              A one-time payment with no recurring subscription. You pay by bank or wallet transfer, and a finance
-              reviewer confirms it against the receiving-account statement.
-            </p>
-            <Button variant="secondary" size="lg" render={<Link href={ROUTES.membership} />}>
-              See membership details
-            </Button>
-          </div>
-          <div className="space-y-6">
+          <Reveal className="h-full">
+            <TiltCard className="h-full">
+              <div className="h-full space-y-5 rounded-[1.25rem] bg-brand-deep p-8 text-white md:p-10">
+                <p className="text-sm font-semibold uppercase tracking-[0.14em] text-white/75">Registration fee</p>
+                <h2 id="fee-heading" className="font-display text-5xl font-semibold">
+                  {feeLabel}
+                </h2>
+                <p className="text-white/85">
+                  A one-time payment with no recurring subscription. You pay by bank or wallet transfer, and a finance
+                  reviewer confirms it against the receiving-account statement.
+                </p>
+                <Button variant="secondary" size="lg" render={<Link href={ROUTES.membership} />}>
+                  See membership details
+                </Button>
+              </div>
+            </TiltCard>
+          </Reveal>
+          <Reveal delay={0.1} className="space-y-6">
             <h2 className="font-display text-3xl font-semibold">Common questions</h2>
             <dl className="space-y-6">
               {previewFaq.map((item) => (
@@ -240,26 +295,28 @@ export default async function HomePage() {
             <Link href={ROUTES.faq} className="inline-flex font-semibold text-brand-deep underline decoration-brand-gold underline-offset-4">
               All questions
             </Link>
-          </div>
+          </Reveal>
         </Container>
       </section>
 
       <section aria-labelledby="invite-heading" className="pb-24">
         <Container>
-          <div className="flex flex-col items-start gap-6 rounded-[1.25rem] border border-brand-border bg-brand-surface p-8 md:flex-row md:items-center md:justify-between md:p-12">
-            <div className="space-y-3">
-              <h2 id="invite-heading" className="font-display text-4xl font-semibold">
-                Be part of the founding community
-              </h2>
-              <p className="flex items-center gap-2 text-brand-muted">
-                <CheckCircle2 aria-hidden="true" className="size-5 text-brand-success" />
-                {SITE.verificationLabel}. {SITE.governanceLabel}.
-              </p>
+          <Reveal>
+            <div className="flex flex-col items-start gap-6 rounded-[1.25rem] border border-brand-border bg-brand-surface p-8 md:flex-row md:items-center md:justify-between md:p-12">
+              <div className="space-y-3">
+                <h2 id="invite-heading" className="font-display text-4xl font-semibold">
+                  Be part of the founding community
+                </h2>
+                <p className="flex items-center gap-2 text-brand-muted">
+                  <CheckCircle2 aria-hidden="true" className="size-5 text-brand-success" />
+                  {SITE.verificationLabel}. {SITE.governanceLabel}.
+                </p>
+              </div>
+              <Button size="lg" render={<Link href={ROUTES.register} />}>
+                Join the Network
+              </Button>
             </div>
-            <Button size="lg" render={<Link href={ROUTES.register} />}>
-              Join the Network
-            </Button>
-          </div>
+          </Reveal>
         </Container>
       </section>
     </>

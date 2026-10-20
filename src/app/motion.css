@@ -1,0 +1,18 @@
+@keyframes ups-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ups-marquee {
+  animation: ups-marquee 38s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ups-marquee {
+    animation: none;
+  }
+}

@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 
+import { MotionProvider } from "@/components/motion/motion-provider";
 import { SITE } from "@/constants/site";
 
 import "./globals.css";
+import "./motion.css";
 
 const displayFont = Cormorant_Garamond({
   subsets: ["latin"],
@@ -56,7 +58,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         >
           Skip to main content
         </a>
-        {children}
+        <MotionProvider>{children}</MotionProvider>
       </body>
     </html>
   );
