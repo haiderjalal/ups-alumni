@@ -17,7 +17,8 @@ export const metadata: Metadata = { title: "Fees and accounts", robots: { index:
  * payment page shows a setup state until at least one account is active.
  */
 export default async function FeesAndAccountsPage() {
-  await requireStaffRole(["FINANCE_REVIEWER"]);
+  // Matches the save action, which already accepts SUPER_ADMIN, so the first administrator can set up payments.
+  await requireStaffRole(["FINANCE_REVIEWER", "SUPER_ADMIN"]);
   const [accounts, fee] = await Promise.all([listAllReceivingAccounts(), getEffectiveRegistrationFee()]);
 
   return (
