@@ -83,7 +83,9 @@ export async function getMembershipOverview(userId: string): Promise<{
   membershipStatus: MembershipState | null;
   result: EligibilityResult;
 }> {
-  const membership = await db.membership.findUnique({ where: { userId }, select: { status: true } });
-  const facts = await loadEligibilityFacts(db, userId);
+  const [membership, facts] = await Promise.all([
+    db.membership.findUnique({ where: { userId }, select: { status: true } }),
+    loadEligibilityFacts(db, userId),
+  ]);
   return { membershipStatus: membership?.status ?? null, result: evaluateEligibility(facts) };
 }

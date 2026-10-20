@@ -60,10 +60,7 @@ export interface OnboardingSnapshot {
   business: { name: string; sector: string; city: string; description: string; productsServices: string; websiteUrl: string | null } | null;
 }
 
-/** Everything the onboarding screens need, read in one pass for the signed-in applicant. */
-export async function loadOnboardingSnapshot(userId: string): Promise<OnboardingSnapshot | null> {
-  await provisionAlumniRecords(userId);
-
+async function readOnboardingRows(userId: string) {
   const [user, application, profile, communication, ownership] = await Promise.all([
     db.user.findUnique({ where: { id: userId }, select: { name: true, email: true, emailVerified: true } }),
     db.alumniApplication.findUnique({ where: { userId } }),
@@ -85,7 +82,21 @@ export async function loadOnboardingSnapshot(userId: string): Promise<Onboarding
       },
     }),
   ]);
+  return { user, application, profile, communication, ownership };
+}
 
+/** Everything the onboarding screens need, read in one pass for the signed-in applicant. */
+export async function loadOnboardingSnapshot(userId: string): Promise<OnboardingSnapshot | null> {
+  let rows = await readOnboardingRows(userId);
+
+  // Better Auth provisions these records when the account is created. Provisioning is a write transaction with
+  // several database round trips, so it runs only to repair an account that lacks them, not on every page view.
+  if (!rows.application || !rows.profile || !rows.communication) {
+    await provisionAlumniRecords(userId);
+    rows = await readOnboardingRows(userId);
+  }
+
+  const { user, application, profile, communication, ownership } = rows;
   if (!user || !application || !profile) {
     return null;
   }
