@@ -3,6 +3,7 @@ import "server-only";
 import { db } from "@/lib/db";
 import { log } from "@/lib/logger";
 
+import { isRetryableEmailError } from "./retry-policy";
 import { getEmailTransport } from "./transports";
 import type { EmailMessage } from "./types";
 
@@ -97,11 +98,12 @@ export async function dispatchDueEmails(batchSize = DEFAULT_BATCH_SIZE): Promise
     } catch (error) {
       const message = error instanceof Error ? error.name : "UnknownError";
       const exhausted = row.attempts >= MAX_ATTEMPTS;
+      const permanent = !isRetryableEmailError(message);
       const backoffMinutes = Math.min(60, 2 ** row.attempts);
 
       await db.emailOutbox.update({
         where: { id: row.id },
-        data: exhausted
+        data: exhausted || permanent
           ? { status: "FAILED", lastError: message }
           : {
               lastError: message,
@@ -109,9 +111,9 @@ export async function dispatchDueEmails(batchSize = DEFAULT_BATCH_SIZE): Promise
             },
       });
 
-      if (exhausted) {
+      if (exhausted || permanent) {
         summary.failed += 1;
-        log("error", "email.failed", { outboxId: row.id, attempts: row.attempts });
+        log("error", "email.failed", { outboxId: row.id, attempts: row.attempts, reason: message, permanent });
       } else {
         summary.retryScheduled += 1;
         log("warn", "email.retry_scheduled", { outboxId: row.id, attempts: row.attempts });
