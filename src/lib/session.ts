@@ -26,7 +26,10 @@ export interface MemberStatus {
  * share one database lookup. Better Auth validates the session token against the database.
  */
 export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
-  const session = await auth.api.getSession({ headers: await headers() });
+  // Read request headers before touching auth. During static prerendering this throws Next's dynamic-rendering
+  // signal first, so the page is rendered per request and never validates configuration at build time.
+  const requestHeaders = await headers();
+  const session = await auth.api.getSession({ headers: requestHeaders });
   if (!session) {
     return null;
   }
