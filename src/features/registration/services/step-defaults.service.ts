@@ -164,7 +164,9 @@ export function reviewSummary(input: {
     { label: "Phone visibility", value: VISIBILITY_TEXT[visibility?.phone ?? "PRIVATE"] },
   ];
 
-  const gaps = getApplicationGaps(application, currentYearInZone());
+  // The two confirmations on the review form are the attestation, and submitApplication records them. Counting the
+  // stored value here would list the attestation as missing before it can ever be given, so Submit could never enable.
+  const gaps = getApplicationGaps({ ...application, attested: true }, currentYearInZone());
   return {
     rows,
     missing: gaps.map((gap) => APPLICATION_GAP_MESSAGES[gap]),
