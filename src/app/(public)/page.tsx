@@ -1,9 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, GraduationCap, Handshake, Briefcase, HeartHandshake } from "lucide-react";
+import {
+  ArrowRight,
+  Briefcase,
+  CheckCircle2,
+  GraduationCap,
+  Handshake,
+  HeartHandshake,
+  LockKeyhole,
+  ReceiptText,
+  ShieldCheck,
+} from "lucide-react";
 
 import { BatchExplorer } from "@/components/home/batch-explorer";
 import { HeroStage } from "@/components/motion/hero-stage";
+import { Magnetic } from "@/components/motion/magnetic";
 import { Marquee } from "@/components/motion/marquee";
 import { ProcessTrack } from "@/components/motion/process-track";
 import { Reveal } from "@/components/motion/reveal";
@@ -70,6 +81,12 @@ const STEPS = [
   "Receive confirmation of your payment and alumni review.",
 ] as const;
 
+const TRUST_POINTS = [
+  { icon: ShieldCheck, label: SITE.verificationLabel },
+  { icon: ReceiptText, label: "Payments confirmed against the account statement" },
+  { icon: LockKeyhole, label: "Member details stay private" },
+] as const;
+
 export default async function HomePage() {
   const [fee, batchYears, upcomingEvents, stories, faq] = await Promise.all([
     getEffectiveRegistrationFee(),
@@ -85,16 +102,21 @@ export default async function HomePage() {
   return (
     <>
       <section className="relative overflow-hidden">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-40 -top-40 size-[32rem] rounded-full bg-brand-tint/70 blur-3xl"
-        />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="ups-dot-grid absolute inset-0" />
+          <div className="ups-parallax absolute -right-44 -top-44 size-[36rem]">
+            <div className="ups-aurora size-full rounded-full" />
+          </div>
+          <div className="ups-parallax ups-parallax-inverse absolute -bottom-40 -left-40 size-[30rem]">
+            <div className="ups-aurora-deep size-full rounded-full" />
+          </div>
+        </div>
         <Container className="relative grid gap-12 py-14 md:grid-cols-[1.1fr_0.9fr] md:items-center md:py-24">
           <div className="space-y-8">
             <Reveal>
               <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand-gold-text">{SITE.contextLine}</p>
             </Reveal>
-            <h1 className="font-display text-5xl font-semibold leading-[1.02] sm:text-6xl lg:text-[4.5rem]">
+            <h1 className="font-display text-[2.75rem] font-semibold leading-[1.04] sm:text-6xl lg:text-[4.25rem]">
               <WordReveal text="Different batches. Shared beginnings." />
             </h1>
             <Reveal delay={0.5}>
@@ -105,14 +127,24 @@ export default async function HomePage() {
             </Reveal>
             <Reveal delay={0.6}>
               <div className="flex flex-wrap gap-3">
-                <Button size="lg" render={<Link href={ROUTES.register} />}>
-                  Join for {feeLabel}
-                  <ArrowRight aria-hidden="true" className="size-4" />
-                </Button>
+                <Magnetic>
+                  <Button size="lg" render={<Link href={ROUTES.register} />}>
+                    Join for {feeLabel}
+                    <ArrowRight aria-hidden="true" className="size-4" />
+                  </Button>
+                </Magnetic>
                 <Button size="lg" variant="outline" render={<Link href={ROUTES.about} />}>
                   Explore the Community
                 </Button>
               </div>
+              <ul className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-brand-muted">
+                {TRUST_POINTS.map(({ icon: Icon, label }) => (
+                  <li key={label} className="flex items-center gap-2">
+                    <Icon aria-hidden="true" className="size-4 shrink-0 text-brand-gold-text" />
+                    {label}
+                  </li>
+                ))}
+              </ul>
             </Reveal>
           </div>
           <Reveal delay={0.2} distance={24}>
@@ -266,7 +298,7 @@ export default async function HomePage() {
       <section aria-labelledby="fee-heading" className="py-20">
         <Container className="grid gap-10 md:grid-cols-[0.9fr_1.1fr]">
           <Reveal className="h-full">
-            <TiltCard className="h-full">
+            <TiltCard className="h-full" radius="rounded-[1.25rem]">
               <div className="h-full space-y-5 rounded-[1.25rem] bg-brand-deep p-8 text-white md:p-10">
                 <p className="text-sm font-semibold uppercase tracking-[0.14em] text-white/75">Registration fee</p>
                 <h2 id="fee-heading" className="font-display text-5xl font-semibold">

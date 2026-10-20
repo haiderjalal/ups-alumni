@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Manrope } from "next/font/google";
+import { Inter } from "next/font/google";
 
 import { MotionProvider } from "@/components/motion/motion-provider";
 import { SITE } from "@/constants/site";
@@ -7,16 +7,10 @@ import { SITE } from "@/constants/site";
 import "./globals.css";
 import "./motion.css";
 
-const displayFont = Cormorant_Garamond({
+// One variable family for the whole site. Hierarchy comes from weight and tracking, not a second typeface.
+const sansFont = Inter({
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  variable: "--font-cormorant",
-  display: "swap",
-});
-
-const sansFont = Manrope({
-  subsets: ["latin"],
-  variable: "--font-manrope",
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -50,7 +44,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${displayFont.variable} ${sansFont.variable}`}>
+    <html lang="en" className={sansFont.variable}>
       <body className="min-h-dvh bg-brand-ivory font-sans text-brand-ink antialiased">
         <a
           href="#main-content"

@@ -1,3 +1,9 @@
+/*
+ * Decorative motion for the public pages. Every animation here uses transform or opacity only, so it stays on the
+ * compositor. Every animation stops for visitors who prefer reduced motion.
+ */
+
+/* Marquee: a slow, endless band. Pauses on hover so a visitor can read it. */
 @keyframes ups-marquee {
   from {
     transform: translateX(0);
@@ -11,8 +17,89 @@
   animation: ups-marquee 38s linear infinite;
 }
 
+.ups-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Aurora: soft brand-coloured light that drifts behind the hero. Radial gradients cost less than blur filters. */
+@keyframes ups-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-3%, 4%, 0) scale(1.06);
+  }
+}
+
+.ups-aurora {
+  background: radial-gradient(closest-side, rgb(183 138 66 / 0.32), rgb(183 138 66 / 0));
+  animation: ups-drift 22s ease-in-out infinite;
+}
+
+.ups-aurora-deep {
+  background: radial-gradient(closest-side, rgb(18 62 53 / 0.2), rgb(18 62 53 / 0));
+  animation: ups-drift 28s ease-in-out -9s infinite;
+}
+
+/* Dot grid: a faint texture that fades out toward the edges, so it never competes with the headline. */
+.ups-dot-grid {
+  background-image: radial-gradient(rgb(18 62 53 / 0.16) 1px, transparent 1px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 75% 35%, #000 20%, transparent 75%);
+  mask-image: radial-gradient(ellipse 70% 60% at 75% 35%, #000 20%, transparent 75%);
+}
+
+/*
+ * Parallax: decorative layers move at a different rate from the page. Native scroll-driven animation is used where
+ * supported. Browsers without it show the same layers, still, which is the intended result for decoration.
+ */
+@keyframes ups-parallax {
+  from {
+    transform: translate3d(0, var(--ups-parallax-distance, 80px), 0);
+  }
+  to {
+    transform: translate3d(0, calc(var(--ups-parallax-distance, 80px) * -1), 0);
+  }
+}
+
+.ups-parallax-inverse {
+  --ups-parallax-distance: -90px;
+}
+
+@supports ((animation-timeline: view()) and (animation-range: entry)) {
+  .ups-parallax {
+    animation: ups-parallax linear both;
+    animation-timeline: view();
+  }
+}
+
+/*
+ * Spotlight: a warm glow that follows the pointer across a card. It sits above the card content but never receives
+ * pointer events, so links and buttons underneath still work and their text stays fully readable.
+ */
+.ups-spotlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  background: radial-gradient(circle 260px at var(--spot-x, 50%) var(--spot-y, 50%), rgb(183 138 66 / 0.18), rgb(183 138 66 / 0));
+}
+
+.ups-spotlight-host:hover .ups-spotlight {
+  opacity: 1;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .ups-marquee {
+  .ups-marquee,
+  .ups-aurora,
+  .ups-aurora-deep,
+  .ups-parallax {
     animation: none;
+  }
+
+  .ups-spotlight {
+    transition: none;
   }
 }

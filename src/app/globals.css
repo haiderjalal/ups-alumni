@@ -109,8 +109,9 @@
   --color-brand-danger: var(--brand-danger);
   --color-brand-success: var(--brand-success);
 
-  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-cormorant), Georgia, "Times New Roman", serif;
+  /* Display and body share Inter. Headings differ by weight and tracking, so there is one type family to maintain. */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -137,15 +138,27 @@
     font-size: 1rem;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    /* Keeps fallback text the same visual size while the web font loads, which prevents layout shift. */
+    font-size-adjust: from-font;
   }
 
   h1,
   h2,
   h3 {
     font-family: var(--font-display);
-    letter-spacing: -0.01em;
-    text-wrap: balance;
     color: var(--brand-ink);
+    text-wrap: balance;
+    font-feature-settings: "cv11";
+    line-height: 1.12;
+  }
+
+  h1 {
+    letter-spacing: -0.035em;
+  }
+
+  h2,
+  h3 {
+    letter-spacing: -0.025em;
   }
 
   :focus-visible {
