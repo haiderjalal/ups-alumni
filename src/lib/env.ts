@@ -6,7 +6,11 @@ const serverEnvSchema = z
     NEXT_PUBLIC_SITE_URL: z.url(),
     APP_TIMEZONE: z.string().min(1).default("Asia/Karachi"),
 
-    DATABASE_URL: z.string().min(1),
+    // A value with quotes or a leading space around it is not a URL, and the driver then falls back to a dummy host
+    // named "base". Rejecting it here turns that into a clear message at startup instead of a failed connection.
+    DATABASE_URL: z
+      .string()
+      .regex(/^postgres(?:ql)?:\/\/\S+$/, "DATABASE_URL must start with postgresql:// and have no quotes or spaces around it."),
 
     BETTER_AUTH_URL: z.url(),
     BETTER_AUTH_SECRET: z.string().min(32, "BETTER_AUTH_SECRET must be at least 32 characters."),
