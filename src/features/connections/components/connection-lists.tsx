@@ -38,7 +38,7 @@ export function ConnectionRequestList({ items, mode, reasons }: ConnectionReques
             </time>
           </div>
           {item.message ? (
-            <p className="whitespace-pre-wrap break-words rounded-lg bg-brand-sage p-3 text-sm leading-relaxed text-brand-ink">
+            <p className="whitespace-pre-wrap break-words rounded-lg bg-brand-lilac p-3 text-sm leading-relaxed text-brand-ink">
               {item.message}
             </p>
           ) : null}

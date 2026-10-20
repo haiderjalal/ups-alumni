@@ -35,7 +35,7 @@ function StatusRow({ done, title, detail }: { done: boolean; title: string; deta
   const Icon = done ? CheckCircle2 : Clock;
   return (
     <li className="flex gap-4 py-5">
-      <Icon aria-hidden="true" className={done ? "mt-1 size-5 shrink-0 text-brand-success" : "mt-1 size-5 shrink-0 text-brand-gold-text"} />
+      <Icon aria-hidden="true" className={done ? "mt-1 size-5 shrink-0 text-brand-success" : "mt-1 size-5 shrink-0 text-brand-violet"} />
       <div className="space-y-1">
         <p className="font-semibold">{title}</p>
         <p className="text-sm leading-relaxed text-brand-muted">{detail}</p>
@@ -113,7 +113,7 @@ export default async function StatusPage() {
             <ul className="space-y-2">
               {membership.result.gaps.map((gap) => (
                 <li key={gap} className="flex gap-3 text-brand-muted">
-                  <Circle aria-hidden="true" className="mt-1.5 size-3 shrink-0 text-brand-gold-text" />
+                  <Circle aria-hidden="true" className="mt-1.5 size-3 shrink-0 text-brand-violet" />
                   <span>{ELIGIBILITY_GAP_MESSAGES[gap]}</span>
                 </li>
               ))}

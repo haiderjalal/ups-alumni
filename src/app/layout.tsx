@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 
 import { MotionProvider } from "@/components/motion/motion-provider";
+import { BRAND_COLORS } from "@/constants/colors";
 import { SITE } from "@/constants/site";
 
 import "./globals.css";
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#123E35",
+  themeColor: BRAND_COLORS.deep,
   width: "device-width",
   initialScale: 1,
 };
@@ -45,7 +46,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={sansFont.variable}>
-      <body className="min-h-dvh bg-brand-ivory font-sans text-brand-ink antialiased">
+      <body className="min-h-dvh bg-brand-mist font-sans text-brand-ink antialiased">
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-brand-deep focus:px-4 focus:py-2 focus:text-white"

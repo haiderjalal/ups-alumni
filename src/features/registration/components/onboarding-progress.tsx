@@ -47,7 +47,7 @@ export function OnboardingProgress({ currentSlug, completedCount }: OnboardingPr
               {isReachable && !isCurrent ? (
                 <Link
                   href={`${ROUTES.appOnboarding}/${step.slug}`}
-                  className="block rounded-lg p-2 hover:bg-brand-sage focus-visible:outline-brand-deep"
+                  className="block rounded-lg p-2 hover:bg-brand-lilac focus-visible:outline-brand-deep"
                 >
                   {content}
                 </Link>

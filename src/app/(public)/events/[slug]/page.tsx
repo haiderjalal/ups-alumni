@@ -44,7 +44,7 @@ export default async function EventDetailPage({ params }: EventPageProps) {
           }
         />
         <div className="whitespace-pre-line text-lg leading-relaxed text-brand-muted">{event.description}</div>
-        <div className="rounded-2xl bg-brand-sage p-6">
+        <div className="rounded-2xl bg-brand-lilac p-6">
           <p className="text-brand-ink">
             Members receive registration links and any virtual meeting details. Sign in or join to RSVP.
           </p>

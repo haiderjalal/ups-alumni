@@ -14,7 +14,7 @@ export function ProcessTrack({ children }: { children: ReactNode }) {
       <div aria-hidden="true" className="absolute bottom-2 left-[calc(1rem-0.5px)] top-2 w-px bg-brand-border" />
       <motion.div
         aria-hidden="true"
-        className="absolute left-[calc(1rem-0.5px)] top-2 w-px origin-top bg-brand-gold"
+        className="absolute left-[calc(1rem-0.5px)] top-2 w-px origin-top bg-brand-vermilion"
         style={{ height }}
       />
       {children}

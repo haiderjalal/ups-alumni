@@ -105,16 +105,16 @@ export default async function HomePage() {
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="ups-dot-grid absolute inset-0" />
           <div className="ups-parallax absolute -right-44 -top-44 size-[36rem]">
-            <div className="ups-aurora size-full rounded-full" />
+            <div className="ups-aurora-lime size-full rounded-full" />
           </div>
           <div className="ups-parallax ups-parallax-inverse absolute -bottom-40 -left-40 size-[30rem]">
-            <div className="ups-aurora-deep size-full rounded-full" />
+            <div className="ups-aurora-lavender size-full rounded-full" />
           </div>
         </div>
         <Container className="relative grid gap-12 py-14 md:grid-cols-[1.1fr_0.9fr] md:items-center md:py-24">
           <div className="space-y-8">
             <Reveal>
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand-gold-text">{SITE.contextLine}</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand-violet">{SITE.contextLine}</p>
             </Reveal>
             <h1 className="font-display text-[2.75rem] font-semibold leading-[1.04] sm:text-6xl lg:text-[4.25rem]">
               <WordReveal text="Different batches. Shared beginnings." />
@@ -140,7 +140,7 @@ export default async function HomePage() {
               <ul className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-brand-muted">
                 {TRUST_POINTS.map(({ icon: Icon, label }) => (
                   <li key={label} className="flex items-center gap-2">
-                    <Icon aria-hidden="true" className="size-4 shrink-0 text-brand-gold-text" />
+                    <Icon aria-hidden="true" className="size-4 shrink-0 text-brand-violet" />
                     {label}
                   </li>
                 ))}
@@ -171,7 +171,7 @@ export default async function HomePage() {
               opportunity, the network is built for every stage of your career.
             </p>
             <p>
-              <Link href={ROUTES.about} className="font-semibold text-brand-deep underline decoration-brand-gold underline-offset-4">
+              <Link href={ROUTES.about} className="font-semibold text-brand-deep underline decoration-brand-vermilion underline-offset-4">
                 Read more about the community
               </Link>
             </p>
@@ -179,7 +179,7 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      <section aria-labelledby="batches-heading" className="bg-brand-sage/60 py-20">
+      <section aria-labelledby="batches-heading" className="bg-brand-lilac/60 py-20">
         <Container className="space-y-10">
           <Reveal>
             <SectionHeading
@@ -206,11 +206,11 @@ export default async function HomePage() {
                 <Reveal delay={index * 0.08} className="h-full">
                   <TiltCard className="h-full">
                     <div
-                      className="flex h-full gap-5 rounded-2xl border border-brand-border bg-brand-surface p-7 shadow-[0_24px_50px_-32px_rgba(8,44,37,0.35)]"
+                      className="flex h-full gap-5 rounded-2xl border border-brand-border bg-brand-surface p-7 shadow-card"
                       style={{ transformStyle: "preserve-3d" }}
                     >
                       <span
-                        className="flex size-12 shrink-0 items-center justify-center rounded-full bg-brand-tint text-brand-deep"
+                        className="flex size-12 shrink-0 items-center justify-center rounded-full bg-brand-lavender text-brand-deep"
                         style={{ transform: "translateZ(36px)" }}
                       >
                         <benefit.icon aria-hidden="true" className="size-6" />
@@ -258,7 +258,7 @@ export default async function HomePage() {
                   <Reveal key={story.slug} delay={index * 0.08} className="h-full">
                     <Link
                       href={`${ROUTES.stories}/${story.slug}`}
-                      className="group block h-full space-y-3 rounded-2xl border border-brand-border bg-brand-ivory p-6 transition-colors duration-200 hover:border-brand-deep"
+                      className="group block h-full space-y-3 rounded-2xl border border-brand-border bg-brand-mist p-6 transition-colors duration-200 hover:border-brand-deep"
                     >
                       <h3 className="font-display text-2xl font-semibold group-hover:text-brand-deep">{story.title}</h3>
                       <p className="text-sm text-brand-muted">
@@ -283,7 +283,7 @@ export default async function HomePage() {
               <ol className="space-y-8">
                 {STEPS.map((step, index) => (
                   <li key={step} className="relative flex gap-6">
-                    <span className="relative z-10 flex size-8 shrink-0 items-center justify-center rounded-full border border-brand-gold bg-brand-ivory font-display text-lg font-semibold text-brand-gold-text">
+                    <span className="relative z-10 flex size-8 shrink-0 items-center justify-center rounded-full border border-brand-deep bg-brand-lime font-display text-lg font-semibold text-brand-night">
                       {index + 1}
                     </span>
                     <p className="pt-0.5 text-lg leading-relaxed">{step}</p>
@@ -324,7 +324,7 @@ export default async function HomePage() {
                 </div>
               ))}
             </dl>
-            <Link href={ROUTES.faq} className="inline-flex font-semibold text-brand-deep underline decoration-brand-gold underline-offset-4">
+            <Link href={ROUTES.faq} className="inline-flex font-semibold text-brand-deep underline decoration-brand-vermilion underline-offset-4">
               All questions
             </Link>
           </Reveal>

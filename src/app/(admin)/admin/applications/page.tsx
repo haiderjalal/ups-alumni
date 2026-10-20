@@ -49,7 +49,7 @@ export default async function ApplicationsPage({ searchParams }: PageProps) {
         <form method="get" className="grid gap-4 rounded-2xl border border-brand-border bg-brand-surface p-5 sm:grid-cols-2 xl:grid-cols-5">
           <label className="space-y-2 text-sm font-semibold">
             Status
-            <select name="status" defaultValue={filters.status ?? ""} className="h-11 w-full rounded-lg border border-brand-border bg-brand-surface px-3 font-normal">
+            <select name="status" defaultValue={filters.status ?? ""} className="h-11 w-full rounded-lg border border-brand-field bg-brand-surface px-3 font-normal">
               <option value="">Open queue</option>
               {STATUS_FILTERS.map((value) => (
                 <option key={value} value={value}>
@@ -60,15 +60,15 @@ export default async function ApplicationsPage({ searchParams }: PageProps) {
           </label>
           <label className="space-y-2 text-sm font-semibold">
             Batch year
-            <input name="batch" defaultValue={filters.batchYear ?? ""} inputMode="numeric" className="h-11 w-full rounded-lg border border-brand-border px-3 font-normal" />
+            <input name="batch" defaultValue={filters.batchYear ?? ""} inputMode="numeric" className="h-11 w-full rounded-lg border border-brand-field px-3 font-normal" />
           </label>
           <label className="space-y-2 text-sm font-semibold">
             City
-            <input name="city" defaultValue={filters.city ?? ""} className="h-11 w-full rounded-lg border border-brand-border px-3 font-normal" />
+            <input name="city" defaultValue={filters.city ?? ""} className="h-11 w-full rounded-lg border border-brand-field px-3 font-normal" />
           </label>
           <label className="space-y-2 text-sm font-semibold">
             Occupation
-            <select name="occupation" defaultValue={filters.occupation ?? ""} className="h-11 w-full rounded-lg border border-brand-border bg-brand-surface px-3 font-normal">
+            <select name="occupation" defaultValue={filters.occupation ?? ""} className="h-11 w-full rounded-lg border border-brand-field bg-brand-surface px-3 font-normal">
               <option value="">Any</option>
               {PROFESSIONAL_STATUS_VALUES.map((value) => (
                 <option key={value} value={value}>
@@ -107,7 +107,7 @@ export default async function ApplicationsPage({ searchParams }: PageProps) {
                     <td className="px-4 py-3 font-semibold">{row.user.name}</td>
                     <td className="px-4 py-3">
                       {row.user.profile?.matricYear ?? "Not set"}
-                      {row.user.profile?.batchReviewRequested ? <span className="ml-2 rounded-full bg-brand-tint px-2 py-0.5 text-xs">Manual review</span> : null}
+                      {row.user.profile?.batchReviewRequested ? <span className="ml-2 rounded-full bg-brand-lavender px-2 py-0.5 text-xs">Manual review</span> : null}
                     </td>
                     <td className="px-4 py-3">{row.user.profile?.currentCity ?? "Not set"}</td>
                     <td className="px-4 py-3">{row.status.replace(/_/g, " ").toLowerCase()}</td>

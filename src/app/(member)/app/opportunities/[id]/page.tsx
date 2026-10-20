@@ -52,7 +52,7 @@ export default async function OpportunityDetailPage({
         {opportunity.isPoster && !opportunity.isLive ? (
           <p
             role="status"
-            className="rounded-xl border border-brand-border bg-brand-sage px-4 py-3 text-sm text-brand-ink"
+            className="rounded-xl border border-brand-border bg-brand-lilac px-4 py-3 text-sm text-brand-ink"
           >
             Only you can see this opportunity. Status:{" "}
             <strong>{posterStatus}</strong>.
@@ -60,7 +60,7 @@ export default async function OpportunityDetailPage({
         ) : null}
 
         <header className="space-y-3">
-          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-gold-text break-words">
+          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-violet break-words">
             {[
               OPPORTUNITY_CATEGORY_LABELS[opportunity.category],
               REMOTE_TYPE_LABELS[opportunity.remoteType],
@@ -112,7 +112,7 @@ export default async function OpportunityDetailPage({
 
         <section
           aria-labelledby="apply-heading"
-          className="space-y-4 rounded-2xl bg-brand-sage p-6"
+          className="space-y-4 rounded-2xl bg-brand-lilac p-6"
         >
           <h2
             id="apply-heading"

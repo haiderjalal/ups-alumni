@@ -48,7 +48,7 @@ export default async function BusinessDetailPage({
         {business.isOwner && !isPublished ? (
           <p
             role="status"
-            className="rounded-xl border border-brand-border bg-brand-sage px-4 py-3 text-sm text-brand-ink"
+            className="rounded-xl border border-brand-border bg-brand-lilac px-4 py-3 text-sm text-brand-ink"
           >
             Owner preview. This listing is{" "}
             {BUSINESS_STATUS_LABELS[business.status].toLowerCase()} and only you
@@ -57,7 +57,7 @@ export default async function BusinessDetailPage({
         ) : null}
 
         <header className="space-y-3">
-          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-gold-text break-words">
+          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-violet break-words">
             {business.sector} · {business.city}
           </p>
           <h1 className="font-display text-4xl font-semibold leading-tight break-words">
@@ -128,7 +128,7 @@ export default async function BusinessDetailPage({
 
         <section
           aria-labelledby="collaborate-heading"
-          className="space-y-4 rounded-2xl bg-brand-sage p-6"
+          className="space-y-4 rounded-2xl bg-brand-lilac p-6"
         >
           <h2
             id="collaborate-heading"

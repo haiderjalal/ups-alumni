@@ -33,7 +33,7 @@ export default async function MentorProfilePage() {
         {profile ? (
           <p
             role="status"
-            className="rounded-xl border border-brand-border bg-brand-sage px-4 py-3 text-sm text-brand-ink"
+            className="rounded-xl border border-brand-border bg-brand-lilac px-4 py-3 text-sm text-brand-ink"
           >
             You have {profile.activeMentorships} active mentorship
             {profile.activeMentorships === 1 ? "" : "s"}.

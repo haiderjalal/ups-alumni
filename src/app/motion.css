@@ -21,7 +21,7 @@
   animation-play-state: paused;
 }
 
-/* Aurora: soft brand-coloured light that drifts behind the hero. Radial gradients cost less than blur filters. */
+/* Aurora: soft lime and lavender light that drifts behind the hero. Radial gradients cost less than blur filters. */
 @keyframes ups-drift {
   0%,
   100% {
@@ -32,19 +32,27 @@
   }
 }
 
-.ups-aurora {
-  background: radial-gradient(closest-side, rgb(183 138 66 / 0.32), rgb(183 138 66 / 0));
+.ups-aurora-lime {
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--brand-lime) 45%, transparent),
+    color-mix(in srgb, var(--brand-lime) 0%, transparent)
+  );
   animation: ups-drift 22s ease-in-out infinite;
 }
 
-.ups-aurora-deep {
-  background: radial-gradient(closest-side, rgb(18 62 53 / 0.2), rgb(18 62 53 / 0));
+.ups-aurora-lavender {
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--brand-lavender) 60%, transparent),
+    color-mix(in srgb, var(--brand-lavender) 0%, transparent)
+  );
   animation: ups-drift 28s ease-in-out -9s infinite;
 }
 
 /* Dot grid: a faint texture that fades out toward the edges, so it never competes with the headline. */
 .ups-dot-grid {
-  background-image: radial-gradient(rgb(18 62 53 / 0.16) 1px, transparent 1px);
+  background-image: radial-gradient(color-mix(in srgb, var(--brand-deep) 18%, transparent) 1px, transparent 1px);
   background-size: 22px 22px;
   -webkit-mask-image: radial-gradient(ellipse 70% 60% at 75% 35%, #000 20%, transparent 75%);
   mask-image: radial-gradient(ellipse 70% 60% at 75% 35%, #000 20%, transparent 75%);
@@ -75,7 +83,7 @@
 }
 
 /*
- * Spotlight: a warm glow that follows the pointer across a card. It sits above the card content but never receives
+ * Spotlight: a soft lavender glow that follows the pointer across a card. It sits above the card content but never receives
  * pointer events, so links and buttons underneath still work and their text stays fully readable.
  */
 .ups-spotlight {
@@ -84,7 +92,11 @@
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.35s ease;
-  background: radial-gradient(circle 260px at var(--spot-x, 50%) var(--spot-y, 50%), rgb(183 138 66 / 0.18), rgb(183 138 66 / 0));
+  background: radial-gradient(
+    circle 260px at var(--spot-x, 50%) var(--spot-y, 50%),
+    color-mix(in srgb, var(--brand-lavender) 40%, transparent),
+    color-mix(in srgb, var(--brand-lavender) 0%, transparent)
+  );
 }
 
 .ups-spotlight-host:hover .ups-spotlight {
@@ -93,8 +105,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .ups-marquee,
-  .ups-aurora,
-  .ups-aurora-deep,
+  .ups-aurora-lime,
+  .ups-aurora-lavender,
   .ups-parallax {
     animation: none;
   }

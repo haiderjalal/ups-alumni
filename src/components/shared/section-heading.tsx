@@ -17,7 +17,7 @@ export function SectionHeading({ eyebrow, title, description, as = "h2", align =
   return (
     <header className={cn("max-w-2xl space-y-4", align === "center" && "mx-auto text-center", className)}>
       {eyebrow ? (
-        <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-gold-text">{eyebrow}</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-violet">{eyebrow}</p>
       ) : null}
       <Heading
         className={cn(

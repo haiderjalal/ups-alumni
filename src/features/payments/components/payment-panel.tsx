@@ -157,7 +157,7 @@ function PaymentEvidenceForm({ order, todayIso }: { order: PaymentPanelOrder; to
           aria-invalid={Boolean(fieldError("receiptMediaId"))}
           aria-describedby={describedBy("receipt", "hint", fieldError("receiptMediaId"))}
           onChange={(event) => setReceipt(event.target.files?.[0] ?? null)}
-          className="block w-full text-sm file:mr-4 file:rounded-lg file:border-0 file:bg-brand-sage file:px-4 file:py-2 file:font-semibold"
+          className="block w-full text-sm file:mr-4 file:rounded-lg file:border-0 file:bg-brand-lilac file:px-4 file:py-2 file:font-semibold"
         />
       </FormField>
 

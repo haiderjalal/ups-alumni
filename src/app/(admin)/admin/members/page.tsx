@@ -47,7 +47,7 @@ export default async function AdminMembersPage() {
                       {row.user.email} · batch {row.user.profile?.matricYear ?? "not set"} · updated {formatDateTime(row.updatedAt)}
                     </p>
                   </div>
-                  <span className="rounded-full bg-brand-tint px-3 py-1 text-sm font-semibold">{row.status.toLowerCase()}</span>
+                  <span className="rounded-full bg-brand-lavender px-3 py-1 text-sm font-semibold">{row.status.toLowerCase()}</span>
                 </div>
                 {row.suspendedReason ? <p className="text-sm text-brand-muted">Reason on record: {row.suspendedReason}</p> : null}
                 <MemberStatusActions userId={row.user.id} status={row.status === "ACTIVE" ? "ACTIVE" : "SUSPENDED"} />

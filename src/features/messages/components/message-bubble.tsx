@@ -24,7 +24,7 @@ export function MessageBubble({ message, isOwn, reportReasons }: MessageBubblePr
       <div
         className={cn(
           "max-w-[85%] space-y-1.5 rounded-2xl px-4 py-2.5 sm:max-w-[70%]",
-          isOwn ? "rounded-br-sm bg-brand-deep text-white" : "rounded-bl-sm bg-brand-sage text-brand-ink",
+          isOwn ? "rounded-br-sm bg-brand-deep text-white" : "rounded-bl-sm bg-brand-lilac text-brand-ink",
         )}
       >
         <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{message.body}</p>

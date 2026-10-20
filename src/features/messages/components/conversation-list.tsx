@@ -33,7 +33,7 @@ export function ConversationList({ items }: ConversationListProps) {
         <li key={item.id}>
           <Link
             href={`${ROUTES.appMessages}/${item.id}`}
-            className="flex items-start justify-between gap-4 px-5 py-4 transition-colors hover:bg-brand-sage focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-deep"
+            className="flex items-start justify-between gap-4 px-5 py-4 transition-colors hover:bg-brand-lilac focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-deep"
           >
             <span className="min-w-0 flex-1 space-y-1">
               <MemberIdentity member={item.other} nameAs="p" />

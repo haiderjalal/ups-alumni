@@ -93,7 +93,7 @@ export function ReportDisclosure({ triggerLabel, triggerAccessibleLabel, reasons
       <FormField id={reasonId} label="Reason" required error={errors.reason?.message}>
         <select
           id={reasonId}
-          className="h-10 w-full rounded-lg border border-brand-border bg-brand-surface px-3 text-base text-brand-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-deep md:text-sm"
+          className="h-10 w-full rounded-lg border border-brand-field bg-brand-surface px-3 text-base text-brand-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-deep md:text-sm"
           aria-invalid={Boolean(errors.reason)}
           aria-describedby={describedBy(reasonId, undefined, errors.reason?.message)}
           {...reasonRegistration}

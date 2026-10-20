@@ -66,7 +66,7 @@ export default async function MentorshipPage({
           </div>
         </div>
 
-        <p className="rounded-xl bg-brand-sage px-4 py-3 text-sm leading-relaxed text-brand-ink">
+        <p className="rounded-xl bg-brand-lilac px-4 py-3 text-sm leading-relaxed text-brand-ink">
           {NO_SCHEDULING_NOTICE}
         </p>
 

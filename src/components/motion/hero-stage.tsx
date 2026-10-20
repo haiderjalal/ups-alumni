@@ -38,13 +38,13 @@ export function HeroStage() {
     >
       <motion.div className="absolute inset-0" style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}>
         <motion.div
-          className="absolute left-[6%] top-[9%] h-[68%] w-[72%] rounded-[1.6rem] bg-brand-tint shadow-[0_30px_60px_-30px_rgba(8,44,37,0.45)]"
+          className="absolute left-[6%] top-[9%] h-[68%] w-[72%] rounded-[1.6rem] bg-brand-lavender shadow-stage-back"
           style={{ translateZ: -90, rotate: -8 }}
           animate={reduce ? undefined : { y: [0, -14, 0] }}
           transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
-          className="absolute inset-x-[10%] bottom-[8%] top-[18%] overflow-hidden rounded-[1.6rem] shadow-[0_40px_80px_-35px_rgba(8,44,37,0.6)]"
+          className="absolute inset-x-[10%] bottom-[8%] top-[18%] overflow-hidden rounded-[1.6rem] shadow-stage-front"
           style={{ translateZ: 40, rotate: 3 }}
           animate={reduce ? undefined : { y: [0, -8, 0] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
@@ -74,17 +74,17 @@ function Medallion() {
         animate={reduce ? undefined : { rotate: 360 }}
         transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
       >
-        <circle cx="60" cy="60" r="54" fill="none" stroke="#B78A42" strokeWidth="1.5" strokeDasharray="4 10" />
+        <circle cx="60" cy="60" r="54" fill="none" className="stroke-brand-vermilion" strokeWidth="1.5" strokeDasharray="4 10" />
       </motion.g>
-      <circle cx="60" cy="60" r="40" fill="#123E35" />
+      <circle cx="60" cy="60" r="40" className="fill-brand-deep" />
       <motion.g
         style={{ transformOrigin: "60px 60px", transformBox: "view-box" }}
         animate={reduce ? undefined : { rotate: -360 }}
         transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
       >
-        <circle cx="60" cy="60" r="30" fill="none" stroke="#B78A42" strokeOpacity="0.6" strokeWidth="1" strokeDasharray="2 6" />
-        <circle cx="60" cy="30" r="3.5" fill="#B78A42" />
-        <circle cx="90" cy="60" r="2.5" fill="#F8F6EF" fillOpacity="0.8" />
+        <circle cx="60" cy="60" r="30" fill="none" className="stroke-brand-lime" strokeOpacity="0.6" strokeWidth="1" strokeDasharray="2 6" />
+        <circle cx="60" cy="30" r="3.5" className="fill-brand-lime" />
+        <circle cx="90" cy="60" r="2.5" className="fill-brand-lavender" />
       </motion.g>
     </svg>
   );

@@ -39,7 +39,7 @@ export default async function ReceiptPage({ params }: ReceiptPageProps) {
   return (
     <article className="mx-auto max-w-xl space-y-8 rounded-2xl border border-brand-border bg-white p-8 text-brand-ink print:border-0 print:p-0">
       <header className="space-y-2 border-b border-brand-border pb-6">
-        <p className="text-sm uppercase tracking-[0.14em] text-brand-gold-text">{SITE.name}</p>
+        <p className="text-sm uppercase tracking-[0.14em] text-brand-violet">{SITE.name}</p>
         <h1 className="font-display text-3xl font-semibold">Payment receipt</h1>
         <p className="text-sm text-brand-muted">This is a payment receipt. It is not a tax invoice.</p>
       </header>

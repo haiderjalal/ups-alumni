@@ -51,14 +51,14 @@ function NavList({ items, pathname, onNavigate, unreadNotifications }: {
               onClick={onNavigate}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-200 hover:bg-brand-sage",
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-200 hover:bg-brand-lilac",
                 active && "bg-brand-deep text-white hover:bg-brand-deep",
               )}
             >
               <Icon aria-hidden="true" className="size-4 shrink-0" />
               <span className="flex-1">{item.label}</span>
               {item.href === ROUTES.appNotifications && unreadNotifications > 0 ? (
-                <span className="rounded-full bg-brand-gold px-2 py-0.5 text-xs font-semibold text-brand-forest">
+                <span className="rounded-full bg-brand-lime px-2 py-0.5 text-xs font-semibold text-brand-night ring-1 ring-inset ring-brand-night/15">
                   <span className="sr-only">unread: </span>
                   {unreadNotifications}
                 </span>
@@ -99,7 +99,7 @@ export function MemberShell({ items, userName, unreadNotifications, children }: 
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="min-h-dvh bg-brand-ivory lg:grid lg:grid-cols-[260px_1fr]">
+    <div className="min-h-dvh bg-brand-mist lg:grid lg:grid-cols-[260px_1fr]">
       <aside className="hidden border-r border-brand-border bg-brand-surface lg:flex lg:flex-col lg:gap-8 lg:p-6" aria-label="Member navigation">
         <Wordmark />
         <nav aria-label="Member">

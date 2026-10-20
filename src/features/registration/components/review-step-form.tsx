@@ -57,7 +57,7 @@ export function ReviewStepForm({ summary, feeLabel, missingItems, emailVerified 
       ) : null}
 
       {missingItems.length > 0 ? (
-        <section aria-labelledby="missing-heading" className="space-y-3 rounded-xl border border-brand-gold/50 bg-brand-tint/60 p-5">
+        <section aria-labelledby="missing-heading" className="space-y-3 rounded-xl border border-brand-violet/50 bg-brand-lavender/60 p-5">
           <h2 id="missing-heading" className="font-display text-2xl font-semibold">
             Still to complete
           </h2>

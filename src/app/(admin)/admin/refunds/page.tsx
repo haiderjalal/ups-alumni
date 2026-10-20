@@ -37,7 +37,7 @@ export default async function RefundsPage() {
                       Order {row.order.reference} · {formatRupees(row.amountMinor)} · {row.source === "AUTOMATIC_REJECTION" ? "opened after rejection" : "opened manually"} · {formatDateTime(row.createdAt)}
                     </p>
                   </div>
-                  <span className="rounded-full bg-brand-tint px-3 py-1 text-sm font-semibold">{row.status.toLowerCase()}</span>
+                  <span className="rounded-full bg-brand-lavender px-3 py-1 text-sm font-semibold">{row.status.toLowerCase()}</span>
                 </div>
                 <p className="text-sm leading-relaxed">{row.reason}</p>
                 {row.failureReason ? <p className="text-sm text-brand-danger">Last failure: {row.failureReason}</p> : null}

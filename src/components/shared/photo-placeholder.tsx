@@ -25,11 +25,11 @@ export function PhotoPlaceholder({ label, className }: PhotoPlaceholderProps) {
         preserveAspectRatio="xMidYMid slice"
         className="absolute inset-0 h-full w-full"
       >
-        <rect width="400" height="500" fill="#123E35" />
-        <path d="M0 360 C 90 300, 160 420, 260 360 S 380 300, 400 330 L400 500 L0 500 Z" fill="#0c3029" />
-        <path d="M0 410 C 110 360, 200 440, 300 400 S 380 380, 400 392 L400 500 L0 500 Z" fill="#082c25" />
-        <circle cx="300" cy="140" r="58" fill="none" stroke="#B78A42" strokeWidth="1.5" opacity="0.7" />
-        <circle cx="300" cy="140" r="34" fill="none" stroke="#B78A42" strokeWidth="1" opacity="0.5" />
+        <rect width="400" height="500" className="fill-brand-deep" />
+        <path d="M0 360 C 90 300, 160 420, 260 360 S 380 300, 400 330 L400 500 L0 500 Z" className="fill-brand-night/55" />
+        <path d="M0 410 C 110 360, 200 440, 300 400 S 380 380, 400 392 L400 500 L0 500 Z" className="fill-brand-night" />
+        <circle cx="300" cy="140" r="58" fill="none" className="stroke-brand-lime" strokeWidth="1.5" opacity="0.7" />
+        <circle cx="300" cy="140" r="34" fill="none" className="stroke-brand-lavender" strokeWidth="1" opacity="0.6" />
       </svg>
       <span className="absolute bottom-4 left-4 right-4 font-display text-xl leading-snug text-white/90">{label}</span>
     </div>

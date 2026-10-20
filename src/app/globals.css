@@ -3,26 +3,39 @@
 @import "shadcn/tailwind.css";
 
 /*
- * Design tokens. Values come from the approved proposal in the project brief (emerald, cream and gold).
- * They are proposed, not an official school brand standard. Change them here, not in components.
- * Light mode first: there is intentionally no dark theme yet.
+ * Design tokens. The theme is built from three brand colours: lavender, lime and vermilion.
+ * Change values here, not in components. Light mode first: there is intentionally no dark theme yet.
+ *
+ * Roles
+ *   Lavender  Brand surface. Chips, icon discs, hover and selected surfaces, soft glows, tinted page background.
+ *   Lime      Highlight. Used on dark panels (where it reads strongly), for badges, selection and step markers.
+ *   Vermilion Accent. Link underlines, the active-nav marker, progress and unread indicators, as a non-text colour.
+ *   Deep      Primary action and dark panels. A dark shade of the lavender hue, so white and lime text pass on it.
+ *
+ * Lime and lavender never carry text on light backgrounds (1.2:1 and 1.9:1 on white). Text on light surfaces is
+ * ink, muted or violet. Vermilion is 4.1:1 on white, so it is limited to borders, rules, dots and underlines;
+ * error text and the destructive colour use the darker danger shade, which keeps the same hue.
+ * Ratios noted below are against the surface the token is used on.
  */
 :root {
-  --brand-deep: #123e35;
-  --brand-forest: #082c25;
-  --brand-ivory: #f8f6ef;
-  --brand-surface: #ffffff;
-  --brand-gold: #b78a42;
-  --brand-gold-text: #7d5a22;
-  --brand-ink: #182a25;
-  --brand-muted: #5e6d66;
-  --brand-border: #dfe5dc;
-  --brand-sage: #eef1ea;
-  --brand-tint: #f3ebdd;
-  --brand-danger: #a4262c;
-  --brand-success: #1f6b4f;
+  --brand-lavender: #cbb3e8;
+  --brand-lime: #d4ff3f;
+  --brand-vermilion: #e34234;
 
-  --background: var(--brand-ivory);
+  --brand-ink: #1f1530; /* body text: 16:1 on mist, 9.2:1 on lavender, 15:1 on lime */
+  --brand-deep: #2d1b4e; /* primary action and dark panels: white 15.2:1, lime 13.2:1, lavender 8.1:1 */
+  --brand-night: #170e26; /* footer, deepest panel; also text on lime badges */
+  --brand-violet: #5b3a8e; /* eyebrows and icons on light: 7.9:1 on mist, 4.6:1 on lavender */
+  --brand-muted: #4f4560; /* secondary text: 8.2:1 on mist, 7.4:1 on lilac, 4.7:1 on lavender */
+  --brand-mist: #f8f4fc; /* page background, a faint lavender wash */
+  --brand-lilac: #efe7f8; /* muted and secondary surfaces */
+  --brand-surface: #ffffff;
+  --brand-border: #dacbee; /* decorative rules and card borders */
+  --brand-field: #85729f; /* form control borders: 3.6:1 on lilac, 3.9:1 on mist, 4.3:1 on white */
+  --brand-danger: #b3281c; /* error text and destructive actions, a dark shade of vermilion: 5.5:1 on tinted alerts */
+  --brand-success: #4a6600; /* success text, a dark shade of lime: 6.1:1 on tinted alerts */
+
+  --background: var(--brand-mist);
   --foreground: var(--brand-ink);
   --card: var(--brand-surface);
   --card-foreground: var(--brand-ink);
@@ -30,30 +43,30 @@
   --popover-foreground: var(--brand-ink);
   --primary: var(--brand-deep);
   --primary-foreground: #ffffff;
-  --secondary: var(--brand-sage);
+  --secondary: var(--brand-lilac);
   --secondary-foreground: var(--brand-ink);
-  --muted: var(--brand-sage);
+  --muted: var(--brand-lilac);
   --muted-foreground: var(--brand-muted);
-  --accent: var(--brand-tint);
+  --accent: var(--brand-lavender);
   --accent-foreground: var(--brand-ink);
   --destructive: var(--brand-danger);
   --destructive-foreground: #ffffff;
   --border: var(--brand-border);
-  --input: var(--brand-border);
+  --input: var(--brand-field);
   --ring: var(--brand-deep);
   --radius: 0.875rem;
 
   --chart-1: var(--brand-deep);
-  --chart-2: var(--brand-gold);
-  --chart-3: var(--brand-muted);
-  --chart-4: var(--brand-forest);
-  --chart-5: var(--brand-tint);
+  --chart-2: var(--brand-vermilion);
+  --chart-3: var(--brand-lavender);
+  --chart-4: var(--brand-violet);
+  --chart-5: var(--brand-lime);
 
   --sidebar: var(--brand-surface);
   --sidebar-foreground: var(--brand-ink);
   --sidebar-primary: var(--brand-deep);
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: var(--brand-sage);
+  --sidebar-accent: var(--brand-lilac);
   --sidebar-accent-foreground: var(--brand-ink);
   --sidebar-border: var(--brand-border);
   --sidebar-ring: var(--brand-deep);
@@ -95,19 +108,26 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --color-brand-deep: var(--brand-deep);
-  --color-brand-forest: var(--brand-forest);
-  --color-brand-ivory: var(--brand-ivory);
-  --color-brand-surface: var(--brand-surface);
-  --color-brand-gold: var(--brand-gold);
-  --color-brand-gold-text: var(--brand-gold-text);
+  --color-brand-lavender: var(--brand-lavender);
+  --color-brand-lime: var(--brand-lime);
+  --color-brand-vermilion: var(--brand-vermilion);
   --color-brand-ink: var(--brand-ink);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-night: var(--brand-night);
+  --color-brand-violet: var(--brand-violet);
   --color-brand-muted: var(--brand-muted);
+  --color-brand-mist: var(--brand-mist);
+  --color-brand-lilac: var(--brand-lilac);
+  --color-brand-surface: var(--brand-surface);
   --color-brand-border: var(--brand-border);
-  --color-brand-sage: var(--brand-sage);
-  --color-brand-tint: var(--brand-tint);
+  --color-brand-field: var(--brand-field);
   --color-brand-danger: var(--brand-danger);
   --color-brand-success: var(--brand-success);
+
+  /* Soft shadows tinted with the darkest brand shade, so they match the palette instead of reading as grey. */
+  --shadow-card: 0 24px 50px -32px color-mix(in srgb, var(--brand-night) 35%, transparent);
+  --shadow-stage-back: 0 30px 60px -30px color-mix(in srgb, var(--brand-night) 45%, transparent);
+  --shadow-stage-front: 0 40px 80px -35px color-mix(in srgb, var(--brand-night) 60%, transparent);
 
   /* Display and body share Inter. Headings differ by weight and tracking, so there is one type family to maintain. */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -132,7 +152,7 @@
   }
 
   body {
-    background: var(--brand-ivory);
+    background: var(--brand-mist);
     color: var(--brand-ink);
     font-family: var(--font-sans);
     font-size: 1rem;
@@ -162,9 +182,24 @@
   }
 
   :focus-visible {
-    outline: 3px solid var(--brand-deep);
+    outline: 3px solid var(--ring);
     outline-offset: 2px;
     border-radius: 4px;
+  }
+
+  /* On dark panels the deep focus ring would vanish, so descendants of a dark panel switch the ring to lime (13:1). */
+  :is(.bg-brand-deep, .bg-brand-night) * {
+    --ring: var(--brand-lime);
+  }
+
+  /* Headings are ink by default, which would be unreadable on a dark panel. There they take the panel's text colour. */
+  :is(.bg-brand-deep, .bg-brand-night) :is(h1, h2, h3) {
+    color: inherit;
+  }
+
+  ::selection {
+    background: var(--brand-lime);
+    color: var(--brand-night);
   }
 }
 

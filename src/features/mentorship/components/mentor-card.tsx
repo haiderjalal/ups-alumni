@@ -22,7 +22,7 @@ export function MentorCard({ mentor }: { mentor: MentorCardData }) {
         {mentor.topics.map((topic) => (
           <li
             key={topic}
-            className="rounded-full bg-brand-sage px-3 py-1 text-xs font-medium capitalize text-brand-ink"
+            className="rounded-full bg-brand-lilac px-3 py-1 text-xs font-medium capitalize text-brand-ink"
           >
             {topic}
           </li>

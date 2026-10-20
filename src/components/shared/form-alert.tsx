@@ -21,7 +21,7 @@ export function FormAlert({ tone, message, className }: FormAlertProps) {
         "flex items-start gap-3 rounded-xl border px-4 py-3 text-sm leading-relaxed",
         tone === "error" && "border-brand-danger/30 bg-brand-danger/5 text-brand-danger",
         tone === "success" && "border-brand-success/30 bg-brand-success/5 text-brand-success",
-        tone === "info" && "border-brand-border bg-brand-sage text-brand-ink",
+        tone === "info" && "border-brand-border bg-brand-lilac text-brand-ink",
         className,
       )}
     >

@@ -103,12 +103,12 @@ export default async function MemberEventPage({ params }: MemberEventPageProps) 
         <div className="whitespace-pre-line break-words text-lg leading-relaxed text-brand-muted">{event.description}</div>
 
         {event.status !== "PUBLISHED" ? (
-          <p role="status" className="rounded-xl border border-brand-border bg-brand-sage p-4 text-brand-ink">
+          <p role="status" className="rounded-xl border border-brand-border bg-brand-lilac p-4 text-brand-ink">
             This event is {event.status === "DRAFT" ? "a draft and is not visible to members yet" : "cancelled"}.
           </p>
         ) : null}
 
-        <div className="space-y-6 rounded-2xl bg-brand-sage p-6">
+        <div className="space-y-6 rounded-2xl bg-brand-lilac p-6">
           <RsvpControls slug={event.slug} prompt={prompt} viewerStatus={viewerRsvp} deadlineLabel={deadlineLabel} />
           <div className="flex flex-wrap gap-3">
             <Button variant="outline" render={<a href={calendarHref} download />}>

@@ -39,7 +39,7 @@ export default async function MentorDetailPage({
         </Link>
 
         <header className="space-y-3">
-          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-gold-text">
+          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-violet">
             Mentor
           </p>
           <h1 className="font-display text-4xl font-semibold leading-tight break-words">
@@ -91,7 +91,7 @@ export default async function MentorDetailPage({
 
         <section
           aria-labelledby="request-heading"
-          className="space-y-4 rounded-2xl bg-brand-sage p-6"
+          className="space-y-4 rounded-2xl bg-brand-lilac p-6"
         >
           <h2
             id="request-heading"

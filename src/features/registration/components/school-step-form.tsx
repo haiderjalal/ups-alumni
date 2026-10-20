@@ -97,7 +97,7 @@ export function SchoolStepForm({ defaults, listedYears, nextHref }: SchoolStepFo
           id="batchChoice"
           aria-invalid={Boolean(fieldError("matricYear"))}
           aria-describedby={describedBy("batchChoice", "hint", fieldError("matricYear"))}
-          className="h-11 w-full rounded-lg border border-brand-border bg-brand-surface px-3 text-base focus-visible:outline-brand-deep"
+          className="h-11 w-full rounded-lg border border-brand-field bg-brand-surface px-3 text-base focus-visible:outline-brand-deep"
           {...form.register("batchChoice")}
         >
           <option value="">Choose your batch</option>
@@ -111,7 +111,7 @@ export function SchoolStepForm({ defaults, listedYears, nextHref }: SchoolStepFo
       </FormField>
 
       {notListed ? (
-        <div className="space-y-6 rounded-xl border border-brand-gold/40 bg-brand-tint/60 p-5">
+        <div className="space-y-6 rounded-xl border border-brand-violet/40 bg-brand-lavender/60 p-5">
           <p className="text-sm leading-relaxed">
             A reviewer will check your batch manually. Enter the year you completed Class 10 and explain briefly how we
             can confirm it.

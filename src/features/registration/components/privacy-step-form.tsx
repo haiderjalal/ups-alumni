@@ -50,7 +50,7 @@ function VisibilitySelect({
         id={id}
         value={value}
         onChange={(event) => onChange(event.target.value as VisibilityValue)}
-        className="h-11 w-full rounded-lg border border-brand-border bg-brand-surface px-3 text-base focus-visible:outline-brand-deep"
+        className="h-11 w-full rounded-lg border border-brand-field bg-brand-surface px-3 text-base focus-visible:outline-brand-deep"
       >
         {VISIBILITY_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>

@@ -93,7 +93,7 @@ export default async function DirectoryPage({ searchParams }: DirectoryPageProps
                   href={`${ROUTES.appDirectory}/${card.publicId}`}
                   className="flex h-full gap-4 rounded-2xl border border-brand-border bg-brand-surface p-5 transition-colors duration-200 hover:border-brand-deep focus-visible:outline-brand-deep"
                 >
-                  <span aria-hidden="true" className="flex size-14 shrink-0 items-center justify-center rounded-full bg-brand-tint font-display text-xl font-semibold text-brand-deep">
+                  <span aria-hidden="true" className="flex size-14 shrink-0 items-center justify-center rounded-full bg-brand-lavender font-display text-xl font-semibold text-brand-deep">
                     {card.name.split(" ").map((part) => part[0]).slice(0, 2).join("")}
                   </span>
                   <span className="min-w-0 space-y-1">

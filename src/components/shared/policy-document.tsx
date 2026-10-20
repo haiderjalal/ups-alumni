@@ -11,7 +11,7 @@ export function PolicyDocumentView({ document }: { document: PolicyDocument }) {
         {document.reviewStatus === "PENDING_SCHOOL_REVIEW" ? (
           <p
             role="note"
-            className="rounded-xl border border-brand-gold/50 bg-brand-tint px-5 py-4 text-sm leading-relaxed text-brand-ink"
+            className="rounded-xl border border-brand-violet/50 bg-brand-lavender px-5 py-4 text-sm leading-relaxed text-brand-ink"
           >
             This wording is a draft pending review by the school. It will be replaced with the published version before
             live registrations begin.

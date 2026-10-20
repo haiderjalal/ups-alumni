@@ -121,7 +121,7 @@ export function RoleGrantForm({ batches }: { batches: Array<{ id: string; year: 
         <Input id="roleUser" value={userId} onChange={(event) => setUserId(event.target.value)} />
       </FormField>
       <FormField id="roleName" label="Role" required>
-        <select id="roleName" value={role} onChange={(event) => setRole(event.target.value)} className="h-11 w-full rounded-lg border border-brand-border bg-brand-surface px-3">
+        <select id="roleName" value={role} onChange={(event) => setRole(event.target.value)} className="h-11 w-full rounded-lg border border-brand-field bg-brand-surface px-3">
           <option value="MEMBERSHIP_ADMIN">Membership administrator</option>
           <option value="FINANCE_REVIEWER">Finance reviewer</option>
           <option value="CONTENT_MODERATOR">Content moderator</option>
@@ -132,7 +132,7 @@ export function RoleGrantForm({ batches }: { batches: Array<{ id: string; year: 
       </FormField>
       {needsBatch ? (
         <FormField id="roleBatch" label="Batch" required>
-          <select id="roleBatch" value={batchId} onChange={(event) => setBatchId(event.target.value)} className="h-11 w-full rounded-lg border border-brand-border bg-brand-surface px-3">
+          <select id="roleBatch" value={batchId} onChange={(event) => setBatchId(event.target.value)} className="h-11 w-full rounded-lg border border-brand-field bg-brand-surface px-3">
             <option value="">Choose a batch</option>
             {batches.map((batch) => (
               <option key={batch.id} value={batch.id}>
@@ -296,7 +296,7 @@ export function ReceivingAccountForm({
       }}
     >
       <FormField id={`method-${values.method}-${values.label}`} label="Method">
-        <select value={values.method} onChange={(event) => setValues({ ...values, method: event.target.value as ManualPaymentMethod })} className="h-11 w-full rounded-lg border border-brand-border bg-brand-surface px-3">
+        <select value={values.method} onChange={(event) => setValues({ ...values, method: event.target.value as ManualPaymentMethod })} className="h-11 w-full rounded-lg border border-brand-field bg-brand-surface px-3">
           {PAYMENT_METHODS.map((method) => (
             <option key={method} value={method}>{PAYMENT_METHOD_LABELS[method]}</option>
           ))}

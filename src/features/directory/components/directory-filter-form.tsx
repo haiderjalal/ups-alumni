@@ -49,7 +49,7 @@ export function DirectoryFilterForm({ action, filters }: { action: string; filte
         <label htmlFor="status" className="text-sm font-semibold">
           Current status
         </label>
-        <select id="status" name="status" defaultValue={filters.status ?? ""} className="h-11 w-full rounded-lg border border-brand-border bg-brand-surface px-3">
+        <select id="status" name="status" defaultValue={filters.status ?? ""} className="h-11 w-full rounded-lg border border-brand-field bg-brand-surface px-3">
           <option value="">Any status</option>
           {PROFESSIONAL_STATUS_VALUES.map((value) => (
             <option key={value} value={value}>
@@ -68,7 +68,7 @@ export function DirectoryFilterForm({ action, filters }: { action: string; filte
         <label htmlFor="sort" className="text-sm font-semibold">
           Sort by
         </label>
-        <select id="sort" name="sort" defaultValue={filters.sort ?? "name"} className="h-11 w-full rounded-lg border border-brand-border bg-brand-surface px-3">
+        <select id="sort" name="sort" defaultValue={filters.sort ?? "name"} className="h-11 w-full rounded-lg border border-brand-field bg-brand-surface px-3">
           <option value="name">Name</option>
           <option value="batch_desc">Newest batch first</option>
           <option value="batch_asc">Oldest batch first</option>

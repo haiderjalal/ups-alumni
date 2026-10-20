@@ -6,8 +6,8 @@ import { ROUTES } from "@/constants/routes";
 
 export default function AuthLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="min-h-dvh bg-brand-ivory">
-      <header className="border-b border-brand-border bg-brand-ivory">
+    <div className="min-h-dvh bg-brand-mist">
+      <header className="border-b border-brand-border bg-brand-mist">
         <Container className="flex h-20 items-center justify-between">
           <Wordmark />
           <Link href={ROUTES.home} className="text-sm font-semibold text-brand-deep underline underline-offset-4">

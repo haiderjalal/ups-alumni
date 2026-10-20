@@ -48,7 +48,7 @@ export default async function ManageBusinessPage() {
         {business ? (
           <p
             role="status"
-            className="rounded-xl border border-brand-border bg-brand-sage px-4 py-3 text-sm text-brand-ink"
+            className="rounded-xl border border-brand-border bg-brand-lilac px-4 py-3 text-sm text-brand-ink"
           >
             Status: <strong>{BUSINESS_STATUS_LABELS[business.status]}</strong>.
             Last updated {formatDateTime(business.updatedAt)}.

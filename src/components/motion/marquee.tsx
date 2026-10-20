@@ -7,7 +7,7 @@ export function Marquee({ items }: { items: readonly string[] }) {
         {row.map((item, index) => (
           <span key={`${item}-${index}`} className="flex items-center gap-6 pr-6">
             {item}
-            <span className="size-2 rounded-full bg-brand-gold" />
+            <span className="size-2 rounded-full bg-brand-lime" />
           </span>
         ))}
       </div>

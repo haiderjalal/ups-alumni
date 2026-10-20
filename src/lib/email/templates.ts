@@ -1,4 +1,5 @@
 import { escapeHtml } from "@/lib/security/text";
+import { BRAND_COLORS } from "@/constants/colors";
 import { SITE } from "@/constants/site";
 
 export interface EmailTemplateInput {
@@ -33,14 +34,14 @@ export function renderEmail(input: EmailTemplateInput): RenderedEmail {
     .join("");
 
   const actionHtml = input.action
-    ? `<p style="margin:24px 0;"><a href="${escapeHtml(input.action.url)}" style="background:#123E35;color:#ffffff;padding:12px 20px;border-radius:12px;text-decoration:none;display:inline-block;">${escapeHtml(input.action.label)}</a></p>`
+    ? `<p style="margin:24px 0;"><a href="${escapeHtml(input.action.url)}" style="background:${BRAND_COLORS.deep};color:#ffffff;padding:12px 20px;border-radius:12px;text-decoration:none;display:inline-block;">${escapeHtml(input.action.label)}</a></p>`
     : "";
 
   const footnoteHtml = input.footnote
-    ? `<p style="margin:0 0 16px;color:#5E6D66;font-size:14px;">${escapeHtml(input.footnote)}</p>`
+    ? `<p style="margin:0 0 16px;color:${BRAND_COLORS.muted};font-size:14px;">${escapeHtml(input.footnote)}</p>`
     : "";
 
-  const html = `<!doctype html><html lang="en"><body style="margin:0;background:#F8F6EF;font-family:Arial,Helvetica,sans-serif;color:#182A25;"><div style="max-width:560px;margin:0 auto;padding:32px 20px;"><h1 style="font-family:Georgia,serif;font-size:26px;margin:0 0 20px;color:#123E35;">${escapeHtml(input.heading)}</h1>${paragraphHtml}${actionHtml}${footnoteHtml}<hr style="border:none;border-top:1px solid #DFE5DC;margin:28px 0 16px;"><p style="margin:0;color:#5E6D66;font-size:13px;">${escapeHtml(SITE.name)} · ${escapeHtml(SITE.governanceLabel)}</p></div></body></html>`;
+  const html = `<!doctype html><html lang="en"><body style="margin:0;background:${BRAND_COLORS.mist};font-family:Arial,Helvetica,sans-serif;color:${BRAND_COLORS.ink};"><div style="max-width:560px;margin:0 auto;padding:32px 20px;"><h1 style="font-family:Georgia,serif;font-size:26px;margin:0 0 20px;color:${BRAND_COLORS.deep};">${escapeHtml(input.heading)}</h1>${paragraphHtml}${actionHtml}${footnoteHtml}<hr style="border:none;border-top:1px solid ${BRAND_COLORS.border};margin:28px 0 16px;"><p style="margin:0;color:${BRAND_COLORS.muted};font-size:13px;">${escapeHtml(SITE.name)} · ${escapeHtml(SITE.governanceLabel)}</p></div></body></html>`;
 
   return { text: textParts.join("\n\n"), html };
 }

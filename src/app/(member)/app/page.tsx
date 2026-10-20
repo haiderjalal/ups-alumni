@@ -71,7 +71,7 @@ export default async function DashboardPage() {
                 Profile completeness
               </h2>
               <div
-                className="h-3 overflow-hidden rounded-full bg-brand-sage"
+                className="h-3 overflow-hidden rounded-full bg-brand-lilac"
                 role="progressbar"
                 aria-valuenow={completion}
                 aria-valuemin={0}
@@ -92,7 +92,7 @@ export default async function DashboardPage() {
                   Notifications
                 </h2>
                 {unread > 0 ? (
-                  <span className="rounded-full bg-brand-gold px-3 py-1 text-sm font-semibold text-brand-forest">{unread} unread</span>
+                  <span className="rounded-full bg-brand-lime px-3 py-1 text-sm font-semibold text-brand-night ring-1 ring-inset ring-brand-night/15">{unread} unread</span>
                 ) : null}
               </div>
               {notifications.length === 0 ? (

@@ -32,7 +32,7 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-brand-border/80 bg-brand-ivory/95 backdrop-blur supports-[backdrop-filter]:bg-brand-ivory/85">
+    <header className="sticky top-0 z-40 border-b border-brand-border/80 bg-brand-mist/95 backdrop-blur supports-[backdrop-filter]:bg-brand-mist/85">
       <div className="mx-auto flex h-20 w-full max-w-[1240px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <Wordmark />
 
@@ -43,9 +43,9 @@ export function SiteHeader() {
               href={item.href}
               aria-current={isActive(pathname, item.href) ? "page" : undefined}
               className={cn(
-                "rounded-md px-3 py-2 text-sm font-medium text-brand-ink transition-colors duration-200 hover:bg-brand-sage",
+                "rounded-md px-3 py-2 text-sm font-medium text-brand-ink transition-colors duration-200 hover:bg-brand-lilac",
                 isActive(pathname, item.href) &&
-                  "text-brand-deep underline decoration-brand-gold decoration-2 underline-offset-8",
+                  "text-brand-deep underline decoration-brand-vermilion decoration-2 underline-offset-8",
               )}
             >
               {item.label}
@@ -66,7 +66,7 @@ export function SiteHeader() {
           >
             <Menu aria-hidden="true" className="size-5" />
           </SheetTrigger>
-          <SheetContent side="right" className="w-[min(88vw,360px)] bg-brand-ivory p-0">
+          <SheetContent side="right" className="w-[min(88vw,360px)] bg-brand-mist p-0">
             <SheetTitle className="sr-only">Site navigation</SheetTitle>
             <div className="flex h-full flex-col gap-8 p-6">
               <Wordmark />
@@ -77,7 +77,7 @@ export function SiteHeader() {
                     href={item.href}
                     onClick={() => setOpen(false)}
                     aria-current={isActive(pathname, item.href) ? "page" : undefined}
-                    className="rounded-md px-3 py-3 font-display text-2xl font-semibold text-brand-ink hover:bg-brand-sage"
+                    className="rounded-md px-3 py-3 font-display text-2xl font-semibold text-brand-ink hover:bg-brand-lilac"
                   >
                     {item.label}
                   </Link>

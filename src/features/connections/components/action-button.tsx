@@ -50,7 +50,7 @@ export function ActionButton<T>({
 
   if (confirmation && isConfirming) {
     return (
-      <div className="w-full space-y-3 rounded-xl border border-brand-border bg-brand-sage/60 p-4">
+      <div className="w-full space-y-3 rounded-xl border border-brand-border bg-brand-lilac/60 p-4">
         <p className="text-sm leading-relaxed text-brand-ink">{confirmation.prompt}</p>
         <div className="flex flex-wrap gap-2">
           <Button type="button" size="lg" variant="destructive" disabled={isPending} onClick={execute}>

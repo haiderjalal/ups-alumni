@@ -65,7 +65,7 @@ export default async function MembershipPage() {
             <h2 className="font-display text-3xl font-semibold">Who can join</h2>
             <ul className="space-y-4">
               {ELIGIBILITY.map((item) => (
-                <li key={item} className="border-l-2 border-brand-gold pl-5 text-lg leading-relaxed text-brand-muted">
+                <li key={item} className="border-l-2 border-brand-vermilion pl-5 text-lg leading-relaxed text-brand-muted">
                   {item}
                 </li>
               ))}
@@ -76,7 +76,7 @@ export default async function MembershipPage() {
             <ol className="space-y-4">
               {PROCESS.map((item, index) => (
                 <li key={item} className="flex gap-4">
-                  <span className="font-display text-2xl font-semibold text-brand-gold-text">{index + 1}</span>
+                  <span className="font-display text-2xl font-semibold text-brand-violet">{index + 1}</span>
                   <p className="pt-0.5 leading-relaxed text-brand-muted">{item}</p>
                 </li>
               ))}
@@ -91,7 +91,7 @@ export default async function MembershipPage() {
           <p className="max-w-3xl text-lg leading-relaxed text-brand-muted">
             Payment confirmation and alumni approval are separate checks. Uploading a receipt does not activate your
             membership on its own. The school will publish review timelines before live collections begin. Read the{" "}
-            <Link href={ROUTES.refundPolicy} className="font-semibold text-brand-deep underline decoration-brand-gold underline-offset-4">
+            <Link href={ROUTES.refundPolicy} className="font-semibold text-brand-deep underline decoration-brand-vermilion underline-offset-4">
               refund policy
             </Link>{" "}
             before you pay.

@@ -29,7 +29,7 @@ export default async function NotificationsPage() {
             {items.map((item) => (
               <li key={item.id} className="space-y-1 px-5 py-4">
                 <p className="flex items-center gap-2 font-semibold">
-                  {item.readAt === null ? <span className="inline-block size-2 rounded-full bg-brand-gold" aria-label="Unread" /> : null}
+                  {item.readAt === null ? <span className="inline-block size-2 rounded-full bg-brand-vermilion" aria-label="Unread" /> : null}
                   {item.title}
                 </p>
                 <p className="text-sm leading-relaxed text-brand-muted">{item.body}</p>

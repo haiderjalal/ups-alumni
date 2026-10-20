@@ -16,7 +16,7 @@ export function GroupMemberList({ members }: GroupMemberListProps) {
   return (
     <ul className="grid gap-2 sm:grid-cols-2">
       {members.map((member) => (
-        <li key={member.userId} className="flex min-w-0 items-center justify-between gap-3 rounded-xl bg-brand-sage px-4 py-3">
+        <li key={member.userId} className="flex min-w-0 items-center justify-between gap-3 rounded-xl bg-brand-lilac px-4 py-3">
           <span className="min-w-0 break-words font-semibold">{member.name}</span>
           {member.role === "MODERATOR" ? <Badge variant="secondary">Moderator</Badge> : null}
         </li>

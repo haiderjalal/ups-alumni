@@ -16,7 +16,7 @@ interface ReportFormProps {
 }
 
 const SELECT_CLASSES =
-  "h-9 w-full rounded-lg border border-brand-border bg-white px-2.5 text-sm text-brand-ink outline-none focus-visible:border-brand-deep focus-visible:ring-3 focus-visible:ring-brand-deep/30";
+  "h-9 w-full rounded-lg border border-brand-field bg-white px-2.5 text-sm text-brand-ink outline-none focus-visible:border-brand-deep focus-visible:ring-3 focus-visible:ring-brand-deep/30";
 
 /** Files a report that goes to moderators. The reporter is never told what happens to it. */
 export function ReportForm({ targetType, targetId, reasons }: ReportFormProps) {
@@ -67,7 +67,7 @@ export function ReportForm({ targetType, targetId, reasons }: ReportFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="w-full space-y-3 rounded-xl border border-brand-border bg-brand-sage p-4">
+    <form onSubmit={handleSubmit} noValidate className="w-full space-y-3 rounded-xl border border-brand-border bg-brand-lilac p-4">
       <div className="space-y-2">
         <label htmlFor={reasonId} className="text-sm font-semibold text-brand-ink">
           Why are you reporting this?

@@ -22,7 +22,7 @@ const POLICY_LINKS = [
 
 export function SiteFooter() {
   return (
-    <footer className="mt-24 bg-brand-forest text-white">
+    <footer className="mt-24 bg-brand-night text-white">
       <div className="mx-auto grid w-full max-w-[1240px] gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr] lg:px-8">
         <div className="space-y-5">
           <Wordmark inverted />

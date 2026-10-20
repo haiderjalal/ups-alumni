@@ -15,7 +15,7 @@ interface TiltCardProps {
 }
 
 /**
- * A card that tilts in 3D toward the pointer and springs back when the pointer leaves, with a warm spotlight that
+ * A card that tilts in 3D toward the pointer and springs back when the pointer leaves, with a soft lavender spotlight that
  * follows the pointer. Tilt is disabled for visitors who prefer reduced motion. The spotlight is decorative and sits
  * above the content without intercepting clicks, so it never affects keyboard focus or readability.
  */
